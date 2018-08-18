@@ -7,12 +7,12 @@
   
   <title>WebAssembly介绍 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="简介WebAssembly or wasm is a new portable, size- and load-time-efficient format suitable for compilation to the web. 以上是WebAssemby官网对WebAssemby的定义，翻译过来的大概是这个意思 WebAssembly(简称wasm)是一种精简的、大小和加载时间高效的数据格式，适">
+  <meta name="description" content="##简介WebAssembly or wasm is a new portable, size- and load-time-efficient format suitable for compilation to the web. 以上是WebAssemby官网对WebAssemby的定义，翻译过来的大概是这个意思 WebAssembly(简称wasm)是一种精简的、大小和加载时间高效的数据格式">
 <meta property="og:type" content="article">
 <meta property="og:title" content="WebAssembly介绍">
 <meta property="og:url" content="http://yoursite.com/2018/08/18/WebAssembly介绍/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="简介WebAssembly or wasm is a new portable, size- and load-time-efficient format suitable for compilation to the web. 以上是WebAssemby官网对WebAssemby的定义，翻译过来的大概是这个意思 WebAssembly(简称wasm)是一种精简的、大小和加载时间高效的数据格式，适">
+<meta property="og:description" content="##简介WebAssembly or wasm is a new portable, size- and load-time-efficient format suitable for compilation to the web. 以上是WebAssemby官网对WebAssemby的定义，翻译过来的大概是这个意思 WebAssembly(简称wasm)是一种精简的、大小和加载时间高效的数据格式">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://2r4s9p1yi1fa2jd7j43zph8r-wpengine.netdna-ssl.com/files/2017/02/04-01-langs09.png">
 <meta property="og:image" content="https://2r4s9p1yi1fa2jd7j43zph8r-wpengine.netdna-ssl.com/files/2017/02/04-02-langs08.png">
@@ -20,10 +20,10 @@
 <meta property="og:image" content="https://2r4s9p1yi1fa2jd7j43zph8r-wpengine.netdna-ssl.com/files/2017/02/05-03-diagram_future01.png">
 <meta property="og:image" content="https://d2slcw3kip6qmk.cloudfront.net/marketing/blog/2017Q2/WASM1.png">
 <meta property="og:image" content="https://d2slcw3kip6qmk.cloudfront.net/marketing/blog/2017Q2/WASMTable.png">
-<meta property="og:updated_time" content="2018-08-18T12:58:06.697Z">
+<meta property="og:updated_time" content="2018-08-18T13:00:57.909Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="WebAssembly介绍">
-<meta name="twitter:description" content="简介WebAssembly or wasm is a new portable, size- and load-time-efficient format suitable for compilation to the web. 以上是WebAssemby官网对WebAssemby的定义，翻译过来的大概是这个意思 WebAssembly(简称wasm)是一种精简的、大小和加载时间高效的数据格式，适">
+<meta name="twitter:description" content="##简介WebAssembly or wasm is a new portable, size- and load-time-efficient format suitable for compilation to the web. 以上是WebAssemby官网对WebAssemby的定义，翻译过来的大概是这个意思 WebAssembly(简称wasm)是一种精简的、大小和加载时间高效的数据格式">
 <meta name="twitter:image" content="https://2r4s9p1yi1fa2jd7j43zph8r-wpengine.netdna-ssl.com/files/2017/02/04-01-langs09.png">
   
     <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
@@ -93,7 +93,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>WebAssembly or wasm is a new portable, size- and load-time-efficient format suitable for compilation to the web.</p>
+        <p>##简介<br>WebAssembly or wasm is a new portable, size- and load-time-efficient format suitable for compilation to the web.</p>
 <p>以上是<a href="http://webassembly.org/" target="_blank" rel="noopener">WebAssemby</a>官网对WebAssemby的定义，翻译过来的大概是这个意思</p>
 <p>WebAssembly(简称wasm)是一种精简的、大小和加载时间高效的数据格式，适合编译到Web上运行。</p>
 <p>这句话的几个关键词概括出了wasm的一些特点。</p>
@@ -142,12 +142,12 @@
 <p>WebAssembly的出现其实是希望在Web应用程序的关键性能点对Web程序进行优化，采用WebAssembly编码对可能存在性能热点的地方进行重构，从而整体提高WEB程序的效率。例如，正在开发 React 程序的团队可以把虚拟 DOM、diff算法部分的代码替换成 WebAssembly 的版本，从而提高react渲染的效率。这样的一种混合方式并不会改变以JS为主的前端开发方式，但是可以大大提高性能。并且这样的WebAssembly代码之后会是以模块的形式出现，只需要在项目中引用模块即可，就像引入一个ES6的模块一样方便。</p>
 <p>所以WebAssembly并不会也不可能取代JS。</p>
 <p>##WebAssembly仅仅适用于C/C++开发者嘛？<br>虽然WebAssembly目前仅仅支持C/C++/Rust这几种语言进行编译，但是这么做的目的仅仅是为了尽快出了一个稳定的MVP版本而做出的折衷的选择。之后会继续支持其他语言的编译（<a href="http://webassembly.org/docs/high-level-goals/" target="_blank" rel="noopener">官方说明</a>）。</p>
-<p>##参考链接##<br>1、<a href="http://webassembly.org/" target="_blank" rel="noopener">http://webassembly.org/</a><br>2、<a href="https://hacks.mozilla.org/2017/02/creating-and-working-with-webassembly-modules/" target="_blank" rel="noopener">Creating and working with WebAssembly modules</a><br>3、<a href="https://hacks.mozilla.org/2017/02/what-makes-webassembly-fast/" target="_blank" rel="noopener">What makes WebAssembly fast?</a><br>4、<a href="https://hacks.mozilla.org/2017/02/a-crash-course-in-just-in-time-jit-compilers/" target="_blank" rel="noopener">A crash course in just-in-time (JIT) compilers</a><br>5、<a href="https://www.lucidchart.com/techblog/2017/05/16/webassembly-overview-so-fast-so-fun-sorta-difficult/" target="_blank" rel="noopener">WEBASSEMBLY OVERVIEW: SO FAST! SO FUN! SORTA DIFFICULT!</a><br>6、<a href="https://zhuanlan.zhihu.com/p/25800318" target="_blank" rel="noopener">WebAssembly 系列 知乎专栏</a></p>
+<p>##参考链接<br>1、<a href="http://webassembly.org/" target="_blank" rel="noopener">http://webassembly.org/</a><br>2、<a href="https://hacks.mozilla.org/2017/02/creating-and-working-with-webassembly-modules/" target="_blank" rel="noopener">Creating and working with WebAssembly modules</a><br>3、<a href="https://hacks.mozilla.org/2017/02/what-makes-webassembly-fast/" target="_blank" rel="noopener">What makes WebAssembly fast?</a><br>4、<a href="https://hacks.mozilla.org/2017/02/a-crash-course-in-just-in-time-jit-compilers/" target="_blank" rel="noopener">A crash course in just-in-time (JIT) compilers</a><br>5、<a href="https://www.lucidchart.com/techblog/2017/05/16/webassembly-overview-so-fast-so-fun-sorta-difficult/" target="_blank" rel="noopener">WEBASSEMBLY OVERVIEW: SO FAST! SO FUN! SORTA DIFFICULT!</a><br>6、<a href="https://zhuanlan.zhihu.com/p/25800318" target="_blank" rel="noopener">WebAssembly 系列 知乎专栏</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/08/18/WebAssembly介绍/" data-id="cjkzfilm70000t0mkzob7qvx3" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/08/18/WebAssembly介绍/" data-id="cjkzfl6z80000u7mkapou3b1a" class="article-share-link">Share</a>
       
       
     </footer>
