@@ -322,15 +322,24 @@
 <li>Authoritative nameserver返回example.com的ip地址</li>
 <li>DNS recursive resolver将example.com的ip地址返回给浏览器</li>
 </ol>
-<p>下面解释上述提到的4种域名查询服务器</p>
+<p>下面解释上述提到的4种域名查询服务器:</p>
 <ol>
 <li>DNS recursive resolver：可以理解为本地DNS服务器，是你电脑上网时IPv4或者IPv6设置中填写的那个DNS。这个有可能是手工指定的或者是DHCP自动分配的。它接受到浏览器的域名后，负责发送域名查询请求。</li>
 <li>DNS root nameserver: 指的是互联网根域</li>
 <li>TLD DNS Server：顶级域名查询系统，存着Authoritative nameserver的ip地址</li>
 <li>Authoritative nameserver：可以理解为二级域名查询系统，之所以叫权威域名系统，是因为它不需要去请求其他服务器，自己就能一个域名的最终的权威的IP地址。</li>
 </ol>
-<p>注意：当一个子域（foo.example.com）进行DNS查询时，一个额外的nameserver会在Authoritative nameserver之后，用于记录子域的CNAME record(后面有介绍什么是CNAME)。本地DNS服务器接受到CNAME之后，接着对CNAME进行DNS查询。过程如下图：<br><img src="https://www.cloudflare.com/img/learning/dns/what-is-dns/dns-record-request-sequence-3.png" alt=""></p>
-<h3 id="DNS缓存"><a href="#DNS缓存" class="headerlink" title="DNS缓存"></a>DNS缓存</h3><h3 id="什么是-DNS-CNAME"><a href="#什么是-DNS-CNAME" class="headerlink" title="什么是 DNS CNAME"></a>什么是 DNS CNAME</h3><p>一般情况下，一个域名通过DNS解析之后回返回一个ip地址。但是有一些域名或者子域通过DNS查询开始会返回的结果是另外一个域名，这个域名即它的CNAME record，而后会对CNAME进行DNS查询，返回最终的ip地址。<br>例如：假如blog.example.com 的 CNAME 是 example.com，则blog.example.com的DNS最终查询结果会返回example.com的ip地址。<br>注意：CNAME record一定是一个域名，不会是ip地址。<br>通常情况下，子域（blog.example.com）都会有一个指向根域（example.com）的CNAME，这么做的好处是当ip地址发生变动时，只需要变更根域的DNS映射关系。<br>使用了CNAME，有人会误认为子域和根域会返回相同的内容，其实这还是取决于服务端。CNAME只是让子域和根域指向同一个服务器，服务端还是会根据域名返回不同的内容。</p>
+<p>注意：当一个子域（foo.example.com）进行DNS查询时，一个额外的nameserver会在Authoritative nameserver之后，用于记录子域的CNAME record(后面有介绍什么是CNAME)。本地DNS服务器接受到CNAME之后，接着对CNAME进行DNS查询。过程如下图：</p>
+<p><img src="https://www.cloudflare.com/img/learning/dns/what-is-dns/dns-record-request-sequence-3.png" alt=""></p>
+<h3 id="DNS缓存"><a href="#DNS缓存" class="headerlink" title="DNS缓存"></a>DNS缓存</h3><p>DNS缓存的目的是缩短DNS的查询时间<br>有如下几种缓存机制：</p>
+<ol>
+<li>浏览器缓存：浏览器缓存域名也是有限制的，不仅浏览器缓存大小有限制，而且缓存的时间也有限制，通常情况下为几分钟到几小时不等。这个缓存时间太长和太短都不好，如果缓存时间太长，一旦域名被解析到的IP有变化，会导致被客户端缓存的域名无法解析到变化后的IP地址，以致该域名不能正常解析，这段时间内有可能会有一部分用户无法访问网站。如果时间设置太短，会导致用户每次访问网站都要重新解析一次域名。</li>
+<li>操作系统缓存：是缓存查找的第二步，也是最后一步本机的缓存，如果没有对应缓存，则浏览器会向DNS recursive resolver发起DNS查询请求</li>
+<li>DNS recursive resolver缓存：通常情况，80%的DNS到这里就结束了</li>
+</ol>
+<h3 id="DNS安全"><a href="#DNS安全" class="headerlink" title="DNS安全"></a>DNS安全</h3><p>// TODO</p>
+<h3 id="什么是-DNS-CNAME"><a href="#什么是-DNS-CNAME" class="headerlink" title="什么是 DNS CNAME"></a>什么是 DNS CNAME</h3><p>一般情况下，一个域名通过DNS解析之后回返回一个ip地址。但是有一些域名或者子域通过DNS查询开始会返回的结果是另外一个域名，这个域名即它的CNAME record，而后会对CNAME进行DNS查询，返回最终的ip地址。<br>例如：假如blog.example.com 的 CNAME 是 example.com，则blog.example.com的DNS最终查询结果会返回example.com的ip地址。<br>注意：CNAME record一定是一个域名，不会是ip地址。<br>通常情况下，子域（blog.example.com）都会有一个指向根域（example.com）的CNAME，这么做的好处是当ip地址发生变动时，只需要变更根域的DNS映射关系。<br>使用了CNAME，有人会误认为子域和根域会返回相同的内容，其实这还是取决于服务端。CNAME只是让子域和根域指向同一个服务器，服务端还是会根据域名返回不同的内容。</p>
+<h3 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h3><p><a href="https://www.cloudflare.com/learning/dns/what-is-dns/" target="_blank" rel="noopener">What is DNS? | How DNS works</a></p>
 
           
         
