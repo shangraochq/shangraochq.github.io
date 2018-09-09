@@ -281,6 +281,28 @@
           </span>
 
           
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/网络/" itemprop="url" rel="index">
+                    <span itemprop="name">网络</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
 
           
             
@@ -338,6 +360,7 @@
 <li>DNS recursive resolver缓存：通常情况，80%的DNS到这里就结束了</li>
 </ol>
 <h3 id="DNS安全"><a href="#DNS安全" class="headerlink" title="DNS安全"></a>DNS安全</h3><p>// TODO</p>
+<h3 id="DNS优化"><a href="#DNS优化" class="headerlink" title="DNS优化"></a>DNS优化</h3><p>// TODO</p>
 <h3 id="什么是-DNS-CNAME"><a href="#什么是-DNS-CNAME" class="headerlink" title="什么是 DNS CNAME"></a>什么是 DNS CNAME</h3><p>一般情况下，一个域名通过DNS解析之后回返回一个ip地址。但是有一些域名或者子域通过DNS查询开始会返回的结果是另外一个域名，这个域名即它的CNAME record，而后会对CNAME进行DNS查询，返回最终的ip地址。<br>例如：假如blog.example.com 的 CNAME 是 example.com，则blog.example.com的DNS最终查询结果会返回example.com的ip地址。<br>注意：CNAME record一定是一个域名，不会是ip地址。<br>通常情况下，子域（blog.example.com）都会有一个指向根域（example.com）的CNAME，这么做的好处是当ip地址发生变动时，只需要变更根域的DNS映射关系。<br>使用了CNAME，有人会误认为子域和根域会返回相同的内容，其实这还是取决于服务端。CNAME只是让子域和根域指向同一个服务器，服务端还是会根据域名返回不同的内容。</p>
 <h3 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h3><p><a href="https://www.cloudflare.com/learning/dns/what-is-dns/" target="_blank" rel="noopener">What is DNS? | How DNS works</a></p>
 
@@ -1183,7 +1206,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">categories</span>
                 </a>
               </div>
