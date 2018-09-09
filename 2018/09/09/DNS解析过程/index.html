@@ -79,17 +79,20 @@
 
 
 
-<meta name="description" content="前言git作为最常用的版本控制工具，重要性不言而喻。平时使用的时候有些命令并没有非常理解使用场景，此文用来记录git的操作和其使用场景，以及git的一些概念。 会生成版本的操作1、commit2、非fast forward模式的分支合并注：fast forward模式：比如从master上拉出一个dev分支，dev分支进行了多次commit，而后将dev分支合并到，在dev分支合并到master之">
+<meta name="description" content="什么是 DNSDNS就像一个网络的通信录，将容易记忆的域名与不易记忆的服务器真实IP地址映射起来 DNS如何工作一次没有任何缓存的DNS查询流程如下图所示：  用户在浏览器等设备中输入example.com，查询请求首先被 DNS recursive resolver接收到 DNS recursive resolver发送查询请求到 DNS root nameserver(根域DNS域名查询系统">
 <meta property="og:type" content="article">
-<meta property="og:title" content="git操作记录">
-<meta property="og:url" content="http://yoursite.com/2018/08/25/git操作记录/index.html">
+<meta property="og:title" content="DNS解析过程">
+<meta property="og:url" content="http://yoursite.com/2018/09/09/DNS解析过程/index.html">
 <meta property="og:site_name" content="弥生">
-<meta property="og:description" content="前言git作为最常用的版本控制工具，重要性不言而喻。平时使用的时候有些命令并没有非常理解使用场景，此文用来记录git的操作和其使用场景，以及git的一些概念。 会生成版本的操作1、commit2、非fast forward模式的分支合并注：fast forward模式：比如从master上拉出一个dev分支，dev分支进行了多次commit，而后将dev分支合并到，在dev分支合并到master之">
+<meta property="og:description" content="什么是 DNSDNS就像一个网络的通信录，将容易记忆的域名与不易记忆的服务器真实IP地址映射起来 DNS如何工作一次没有任何缓存的DNS查询流程如下图所示：  用户在浏览器等设备中输入example.com，查询请求首先被 DNS recursive resolver接收到 DNS recursive resolver发送查询请求到 DNS root nameserver(根域DNS域名查询系统">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-08-26T15:03:34.307Z">
+<meta property="og:image" content="https://www.cloudflare.com/img/learning/dns/what-is-dns/dns-lookup-diagram.png">
+<meta property="og:image" content="https://www.cloudflare.com/img/learning/dns/what-is-dns/dns-record-request-sequence-3.png">
+<meta property="og:updated_time" content="2018-09-09T12:22:33.003Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="git操作记录">
-<meta name="twitter:description" content="前言git作为最常用的版本控制工具，重要性不言而喻。平时使用的时候有些命令并没有非常理解使用场景，此文用来记录git的操作和其使用场景，以及git的一些概念。 会生成版本的操作1、commit2、非fast forward模式的分支合并注：fast forward模式：比如从master上拉出一个dev分支，dev分支进行了多次commit，而后将dev分支合并到，在dev分支合并到master之">
+<meta name="twitter:title" content="DNS解析过程">
+<meta name="twitter:description" content="什么是 DNSDNS就像一个网络的通信录，将容易记忆的域名与不易记忆的服务器真实IP地址映射起来 DNS如何工作一次没有任何缓存的DNS查询流程如下图所示：  用户在浏览器等设备中输入example.com，查询请求首先被 DNS recursive resolver接收到 DNS recursive resolver发送查询请求到 DNS root nameserver(根域DNS域名查询系统">
+<meta name="twitter:image" content="https://www.cloudflare.com/img/learning/dns/what-is-dns/dns-lookup-diagram.png">
 
 
 
@@ -119,13 +122,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2018/08/25/git操作记录/"/>
+  <link rel="canonical" href="http://yoursite.com/2018/09/09/DNS解析过程/"/>
 
 
 
 
 
-  <title>git操作记录 | 弥生</title>
+  <title>DNS解析过程 | 弥生</title>
   
 
 
@@ -242,7 +245,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/25/git操作记录/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/09/DNS解析过程/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="弥生的狗子">
@@ -259,7 +262,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">git操作记录</h1>
+          <h1 class="post-title" itemprop="name headline">DNS解析过程</h1>
         
 
         <div class="post-meta">
@@ -271,8 +274,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-08-25T09:19:38+08:00">
-                2018-08-25
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-09-09T17:50:52+08:00">
+                2018-09-09
               </time>
             
 
@@ -281,28 +284,6 @@
             
           </span>
 
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/工具方法/" itemprop="url" rel="index">
-                    <span itemprop="name">工具方法</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
           
 
           
@@ -331,16 +312,27 @@
       
 
       
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>git作为最常用的版本控制工具，重要性不言而喻。平时使用的时候有些命令并没有非常理解使用场景，此文用来记录git的操作和其使用场景，以及git的一些概念。</p>
-<h2 id="会生成版本的操作"><a href="#会生成版本的操作" class="headerlink" title="会生成版本的操作"></a>会生成版本的操作</h2><p>1、commit<br>2、非fast forward模式的分支合并<br>注：fast forward模式：比如从master上拉出一个dev分支，dev分支进行了多次commit，而后将dev分支合并到，在dev分支合并到master之前master分支没有任何提交，这个情况下，git会采用fast forward模式进行merge。采用这种模式，如果将dev分支删除之后不会分支的信息将会丢失。当然我们可以使用–no-ff 强制禁止使用fast forward模式。</p>
-<h2 id="提交类操作"><a href="#提交类操作" class="headerlink" title="提交类操作"></a>提交类操作</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git add &lt;file&gt;/.   // 将本地变更提交到暂存区(stage)</span><br><span class="line">git commit -m &quot;&lt;message&gt;&quot;   // 将暂存区(stage)内容一次性提交到本地仓库中，生成一次新的提交</span><br><span class="line">git push &lt;branch&gt;  // 将本地仓库的修改提交到远端仓库</span><br></pre></td></tr></table></figure>
-<h2 id="暂存类操作"><a href="#暂存类操作" class="headerlink" title="暂存类操作"></a>暂存类操作</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git stash  // 将工作区改动临时存储起来</span><br><span class="line">git stash list // 查看临时存储的信息</span><br><span class="line">git stash apply // 将最近一次放入临时存储区域的改动取出，临时存储区域该次存储不删除</span><br><span class="line">git stash drop &lt;version&gt;  // 删除某次存入存储区域的改动</span><br><span class="line">git stash pop  //  将最近一次放入临时存储区域的改动取出，临时存储区域该次存储会被删除</span><br></pre></td></tr></table></figure>
-<h2 id="关联操作"><a href="#关联操作" class="headerlink" title="关联操作"></a>关联操作</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push --set-upstream origin bug  // 本地新建分支，远端没有该分支，这样push可以在远端新建对应跟踪分支</span><br></pre></td></tr></table></figure>
-<h2 id="查询操作"><a href="#查询操作" class="headerlink" title="查询操作"></a>查询操作</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git log --pretty=oneline  // 查看当前分支所有版本信息</span><br><span class="line">git reflog  // 查看每一次git操作，包括 commit checkout reset merge</span><br><span class="line">git status  // 查看当前分支的状态</span><br><span class="line">git remote -v  // 查看远程分支的信息，包括fetch和push地址</span><br></pre></td></tr></table></figure>
-<h2 id="撤销回退操作"><a href="#撤销回退操作" class="headerlink" title="撤销回退操作"></a>撤销回退操作</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git reset --hard HEAD/version // 当前分支回退到对应版本，HEAD^表示上一版本，HEAD^^, HEAD~100,一次类推</span><br><span class="line">git checkout -- &lt;file&gt;/*  // 撤销未提交到暂存区(stage)的工作区内容的改动</span><br><span class="line">git reset HEAD &lt;file&gt;/*   // 将暂存区(stage)的内容回送回到工作区(unstage),然后可以使用git checkout -- &lt;file&gt;/* 撤销此次的内容改动</span><br></pre></td></tr></table></figure>
-<h2 id="切换操作"><a href="#切换操作" class="headerlink" title="切换操作"></a>切换操作</h2><p>git checkout <branch>  // 切换分支<br>git checkout -b <branch> // 新建分支并切换到新建的分支</branch></branch></p>
-<h2 id="新建操作"><a href="#新建操作" class="headerlink" title="新建操作"></a>新建操作</h2><p>git branch <branch> // 新建分支</branch></p>
-<h2 id="删除操作"><a href="#删除操作" class="headerlink" title="删除操作"></a>删除操作</h2><p>git branch -d <branch>  // 删除分支<br>git branch -D <branch>  // 强制删除</branch></branch></p>
+        <h3 id="什么是-DNS"><a href="#什么是-DNS" class="headerlink" title="什么是 DNS"></a>什么是 DNS</h3><p>DNS就像一个网络的通信录，将容易记忆的域名与不易记忆的服务器真实IP地址映射起来</p>
+<h3 id="DNS如何工作"><a href="#DNS如何工作" class="headerlink" title="DNS如何工作"></a>DNS如何工作</h3><p>一次没有任何缓存的DNS查询流程如下图所示：<br><img src="https://www.cloudflare.com/img/learning/dns/what-is-dns/dns-lookup-diagram.png" alt=""></p>
+<ol>
+<li>用户在浏览器等设备中输入example.com，查询请求首先被 DNS recursive resolver接收到</li>
+<li>DNS recursive resolver发送查询请求到 DNS root nameserver(根域DNS域名查询系统)</li>
+<li>DNS root nameserver 会将 Top Level Domain (TLD) DNS Server，及顶级域名查询系统的ip地址返回给DNS recursive resolver，例如.com或者.net</li>
+<li>DNS recursive resolver 接着会向.com TLD 发送查询请求.</li>
+<li>TLD 返回Authoritative nameserver（example.com）查询系统的ip地址</li>
+<li>最后DNS recursive resolver向Authoritative nameserver发送查询请求</li>
+<li>Authoritative nameserver返回example.com的ip地址</li>
+<li>DNS recursive resolver将example.com的ip地址返回给浏览器</li>
+</ol>
+<p>下面解释上述提到的4种域名查询服务器</p>
+<ol>
+<li>DNS recursive resolver：可以理解为本地DNS服务器，是你电脑上网时IPv4或者IPv6设置中填写的那个DNS。这个有可能是手工指定的或者是DHCP自动分配的。它接受到浏览器的域名后，负责发送域名查询请求。</li>
+<li>DNS root nameserver: 指的是互联网根域</li>
+<li>TLD DNS Server：顶级域名查询系统，存着Authoritative nameserver的ip地址</li>
+<li>Authoritative nameserver：可以理解为二级域名查询系统，之所以叫权威域名系统，是因为它不需要去请求其他服务器，自己就能一个域名的最终的权威的IP地址。</li>
+</ol>
+<p>注意：当一个子域（foo.example.com）进行DNS查询时，一个额外的nameserver会在Authoritative nameserver之后，用于记录子域的CNAME record(后面有介绍什么是CNAME)。本地DNS服务器接受到CNAME之后，接着对CNAME进行DNS查询。过程如下图：<br><img src="https://www.cloudflare.com/img/learning/dns/what-is-dns/dns-record-request-sequence-3.png" alt=""></p>
+<h3 id="DNS缓存"><a href="#DNS缓存" class="headerlink" title="DNS缓存"></a>DNS缓存</h3><h3 id="什么是-DNS-CNAME"><a href="#什么是-DNS-CNAME" class="headerlink" title="什么是 DNS CNAME"></a>什么是 DNS CNAME</h3><p>一般情况下，一个域名通过DNS解析之后回返回一个ip地址。但是有一些域名或者子域通过DNS查询开始会返回的结果是另外一个域名，这个域名即它的CNAME record，而后会对CNAME进行DNS查询，返回最终的ip地址。<br>例如：假如blog.example.com 的 CNAME 是 example.com，则blog.example.com的DNS最终查询结果会返回example.com的ip地址。<br>注意：CNAME record一定是一个域名，不会是ip地址。<br>通常情况下，子域（blog.example.com）都会有一个指向根域（example.com）的CNAME，这么做的好处是当ip地址发生变动时，只需要变更根域的DNS映射关系。<br>使用了CNAME，有人会误认为子域和根域会返回相同的内容，其实这还是取决于服务端。CNAME只是让子域和根域指向同一个服务器，服务端还是会根据域名返回不同的内容。</p>
 
       
     </div>
@@ -365,8 +357,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/08/18/WebAssembly介绍/" rel="next" title="WebAssembly介绍">
-                <i class="fa fa-chevron-left"></i> WebAssembly介绍
+              <a href="/2018/09/08/Flex/" rel="next" title="Flex">
+                <i class="fa fa-chevron-left"></i> Flex
               </a>
             
           </div>
@@ -374,10 +366,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/08/31/Babel介绍/" rel="prev" title="Babel介绍">
-                Babel介绍 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -500,7 +488,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#会生成版本的操作"><span class="nav-number">2.</span> <span class="nav-text">会生成版本的操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#提交类操作"><span class="nav-number">3.</span> <span class="nav-text">提交类操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#暂存类操作"><span class="nav-number">4.</span> <span class="nav-text">暂存类操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关联操作"><span class="nav-number">5.</span> <span class="nav-text">关联操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查询操作"><span class="nav-number">6.</span> <span class="nav-text">查询操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#撤销回退操作"><span class="nav-number">7.</span> <span class="nav-text">撤销回退操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#切换操作"><span class="nav-number">8.</span> <span class="nav-text">切换操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#新建操作"><span class="nav-number">9.</span> <span class="nav-text">新建操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除操作"><span class="nav-number">10.</span> <span class="nav-text">删除操作</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是-DNS"><span class="nav-number">1.</span> <span class="nav-text">什么是 DNS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DNS如何工作"><span class="nav-number">2.</span> <span class="nav-text">DNS如何工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DNS缓存"><span class="nav-number">3.</span> <span class="nav-text">DNS缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是-DNS-CNAME"><span class="nav-number">4.</span> <span class="nav-text">什么是 DNS CNAME</span></a></li></ol></div>
             
 
           </div>

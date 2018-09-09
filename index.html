@@ -239,6 +239,146 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/09/DNS解析过程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弥生的狗子">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="弥生">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/09/09/DNS解析过程/" itemprop="url">DNS解析过程</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-09-09T17:50:52+08:00">
+                2018-09-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="什么是-DNS"><a href="#什么是-DNS" class="headerlink" title="什么是 DNS"></a>什么是 DNS</h3><p>DNS就像一个网络的通信录，将容易记忆的域名与不易记忆的服务器真实IP地址映射起来</p>
+<h3 id="DNS如何工作"><a href="#DNS如何工作" class="headerlink" title="DNS如何工作"></a>DNS如何工作</h3><p>一次没有任何缓存的DNS查询流程如下图所示：<br><img src="https://www.cloudflare.com/img/learning/dns/what-is-dns/dns-lookup-diagram.png" alt=""></p>
+<ol>
+<li>用户在浏览器等设备中输入example.com，查询请求首先被 DNS recursive resolver接收到</li>
+<li>DNS recursive resolver发送查询请求到 DNS root nameserver(根域DNS域名查询系统)</li>
+<li>DNS root nameserver 会将 Top Level Domain (TLD) DNS Server，及顶级域名查询系统的ip地址返回给DNS recursive resolver，例如.com或者.net</li>
+<li>DNS recursive resolver 接着会向.com TLD 发送查询请求.</li>
+<li>TLD 返回Authoritative nameserver（example.com）查询系统的ip地址</li>
+<li>最后DNS recursive resolver向Authoritative nameserver发送查询请求</li>
+<li>Authoritative nameserver返回example.com的ip地址</li>
+<li>DNS recursive resolver将example.com的ip地址返回给浏览器</li>
+</ol>
+<p>下面解释上述提到的4种域名查询服务器</p>
+<ol>
+<li>DNS recursive resolver：可以理解为本地DNS服务器，是你电脑上网时IPv4或者IPv6设置中填写的那个DNS。这个有可能是手工指定的或者是DHCP自动分配的。它接受到浏览器的域名后，负责发送域名查询请求。</li>
+<li>DNS root nameserver: 指的是互联网根域</li>
+<li>TLD DNS Server：顶级域名查询系统，存着Authoritative nameserver的ip地址</li>
+<li>Authoritative nameserver：可以理解为二级域名查询系统，之所以叫权威域名系统，是因为它不需要去请求其他服务器，自己就能一个域名的最终的权威的IP地址。</li>
+</ol>
+<p>注意：当一个子域（foo.example.com）进行DNS查询时，一个额外的nameserver会在Authoritative nameserver之后，用于记录子域的CNAME record(后面有介绍什么是CNAME)。本地DNS服务器接受到CNAME之后，接着对CNAME进行DNS查询。过程如下图：<br><img src="https://www.cloudflare.com/img/learning/dns/what-is-dns/dns-record-request-sequence-3.png" alt=""></p>
+<h3 id="DNS缓存"><a href="#DNS缓存" class="headerlink" title="DNS缓存"></a>DNS缓存</h3><h3 id="什么是-DNS-CNAME"><a href="#什么是-DNS-CNAME" class="headerlink" title="什么是 DNS CNAME"></a>什么是 DNS CNAME</h3><p>一般情况下，一个域名通过DNS解析之后回返回一个ip地址。但是有一些域名或者子域通过DNS查询开始会返回的结果是另外一个域名，这个域名即它的CNAME record，而后会对CNAME进行DNS查询，返回最终的ip地址。<br>例如：假如blog.example.com 的 CNAME 是 example.com，则blog.example.com的DNS最终查询结果会返回example.com的ip地址。<br>注意：CNAME record一定是一个域名，不会是ip地址。<br>通常情况下，子域（blog.example.com）都会有一个指向根域（example.com）的CNAME，这么做的好处是当ip地址发生变动时，只需要变更根域的DNS映射关系。<br>使用了CNAME，有人会误认为子域和根域会返回相同的内容，其实这还是取决于服务端。CNAME只是让子域和根域指向同一个服务器，服务端还是会根据域名返回不同的内容。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/08/Flex/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1023,7 +1163,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
