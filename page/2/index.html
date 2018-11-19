@@ -239,6 +239,349 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/31/Babel介绍/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弥生的狗子">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="弥生">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/31/Babel介绍/" itemprop="url">Babel介绍</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-08-31T09:22:25+08:00">
+                2018-08-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/项目搭建相关/" itemprop="url" rel="index">
+                    <span itemprop="name">项目搭建相关</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Babel的作用"><a href="#Babel的作用" class="headerlink" title="Babel的作用"></a>Babel的作用</h3><p>简单来说把 JavaScript 中 es2015/2016/2017/2046 的新语法转化为 es5，让低端运行环境(如浏览器和 node )能够认识并执行</p>
+<h3 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h3><h4 id="使用单体文件"><a href="#使用单体文件" class="headerlink" title="使用单体文件"></a>使用单体文件</h4><h4 id="命令行"><a href="#命令行" class="headerlink" title="命令行"></a>命令行</h4><p>多见于 package.json 中的 scripts 段落中的某条命令</p>
+<h4 id="构建工具的插件"><a href="#构建工具的插件" class="headerlink" title="构建工具的插件"></a>构建工具的插件</h4><p>直接集成到构建工具中</p>
+<h3 id="Babel工作流程"><a href="#Babel工作流程" class="headerlink" title="Babel工作流程"></a>Babel工作流程</h3><p>babel 本身不具有任何转化功能，它把转化的功能都分解到一个个 plugin 里面。因此当我们不配置任何插件时，经过 babel 的代码和输入是相同的</p>
+<h4 id="解析"><a href="#解析" class="headerlink" title="解析"></a>解析</h4><h4 id="转换"><a href="#转换" class="headerlink" title="转换"></a>转换</h4><h4 id="生成"><a href="#生成" class="headerlink" title="生成"></a>生成</h4><h3 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h3><ul>
+<li>将插件的名字增加到配置文件中 (根目录下创建 .babelrc 或者 package.json 的 babel 里面，格式相同)</li>
+<li>使用 npm install babel-plugin-xxx 进行安装<h4 id="preset"><a href="#preset" class="headerlink" title="preset"></a>preset</h4>比如 es2015 是一套规范，包含大概十几二十个转译插件。如果每次要开发者一个个添加并安装，配置文件很长不说，npm install 的时间也会很长<br>为了解决这个问题，babel 还提供了一组插件的集合。因为常用，所以不必重复定义 &amp; 安装<br>preset 分为以下几种:<br>官方presets:</li>
+<li>@babel/preset-env</li>
+<li>@babel/preset-flow</li>
+<li>@babel/preset-react</li>
+<li>@babel/preset-typescript</li>
+<li>…<br>Stage-X (Experimental Presets)</li>
+<li>Stage 0 - 稻草人: 只是一个想法，经过 TC39 成员提出即可。</li>
+<li>Stage 1 - 提案: 初步尝试。</li>
+<li>Stage 2 - 初稿: 完成初步规范。</li>
+<li>Stage 3 - 候选: 完成规范和浏览器初步实现。</li>
+<li>Stage 4 - 完成: 将被添加到下一年度发布。<br>此外，低一级的 stage 会包含所有高级 stage 的内容，例如 stage-1 会包含 stage-2, stage-3 的所有内容。<br>stage-4 在下一年更新会直接放到 env 中，所以没有单独的 stage-4 可供使用。<h4 id="插件和-preset-的配置项"><a href="#插件和-preset-的配置项" class="headerlink" title="插件和 preset 的配置项"></a>插件和 preset 的配置项</h4>简略情况下，插件和 preset 只要列出字符串格式的名字即可。但如果某个 preset 或者插件需要一些配置项(或者说参数)，就需要把自己先变成数组。第一个元素依然是字符串，表示自己的名字；第二个元素是一个对象，即配置对象。<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">"presets": [</span><br><span class="line">    // 带了配置项，自己变成数组</span><br><span class="line">    [</span><br><span class="line">        // 第一个元素依然是名字</span><br><span class="line">        <span class="string">"env"</span>,</span><br><span class="line">        // 第二个元素是对象，列出配置项</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">"module"</span>: <span class="literal">false</span></span><br><span class="line">        &#125;</span><br><span class="line">    ],</span><br><span class="line"></span><br><span class="line">    // 不带配置项，直接列出名字</span><br><span class="line">    <span class="string">"stage-2"</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="插件执行顺序"><a href="#插件执行顺序" class="headerlink" title="插件执行顺序"></a>插件执行顺序</h3><ul>
+<li>Plugin 会运行在 Preset 之前。</li>
+<li>Plugin 会从前到后顺序执行。</li>
+<li>Preset 的顺序则 刚好相反(从后向前)。</li>
+</ul>
+<h3 id="env"><a href="#env" class="headerlink" title="env"></a>env</h3><p>env 的核心目的是通过配置得知目标环境的特点，然后只做必要的转换。例如目标浏览器支持 es2015，那么 es2015 这个 preset 其实是不需要的，于是代码就可以小一点(一般转化后的代码总是更长)，构建时间也可以缩短一些。<br>如果不写任何配置项，env 等价于 latest，也等价于 es2015 + es2016 + es2017 三个相加(不包含 stage-x 中的插件)<br>例如：<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"presets"</span>: [</span><br><span class="line">    [<span class="string">"env"</span>, &#123;</span><br><span class="line">      <span class="attr">"targets"</span>: &#123;</span><br><span class="line">        <span class="attr">"browsers"</span>: [<span class="string">"last 2 versions"</span>, <span class="string">"safari &gt;= 7"</span>]</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;]</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>如上配置将考虑所有浏览器的最新2个版本(safari大于等于7.0的版本)的特性，将必要的代码进行转换。而这些版本已有的功能就不进行转化了<br>具体写法参照<a href="https://babeljs.io/docs/en/babel-preset-env" target="_blank" rel="noopener">官网</a>或者<a href="https://github.com/browserslist/browserslist" target="_blank" rel="noopener">browserslist</a>。条件对应的环境可以在这里<a href="http://browserl.ist/" target="_blank" rel="noopener">查询</a></p>
+<p>另外一个有用的配置项是 modules。它的取值可以是 amd, umd, systemjs, commonjs 和 false。这可以让 babel 以特定的模块化格式来输出代码。如果选择 false 就不进行模块化处理。</p>
+<h3 id="babel-polyfill"><a href="#babel-polyfill" class="headerlink" title="babel-polyfill"></a>babel-polyfill</h3><p>babel 默认只转换 js 语法，而不转换新的 API，比如 Iterator、Generator、Set、Maps、Proxy、Reflect、Symbol、Promise 等全局对象，以及一些定义在全局对象上的方法(比如 Object.assign)都不会转码。<br>举例来说，es2015 在 Array 对象上新增了 Array.from 方法。babel 就不会转码这个方法。如果想让这个方法运行，必须使用 babel-polyfill。(内部集成了 core-js 和 regenerator)<br>使用时，在所有代码运行之前增加 require(‘babel-polyfill’)。或者更常规的操作是在 webpack.config.js 中将 babel-polyfill 作为第一个 entry。因此必须把 babel-polyfill 作为 dependencies 而不是 devDependencies<br>babel-polyfill 主要有两个缺点：</p>
+<ul>
+<li>使用 babel-polyfill 会导致打出来的包非常大，因为 babel-polyfill 是一个整体，把所有方法都加到原型链上。比如我们只使用了 Array.from，但它把 Object.defineProperty 也给加上了，这就是一种浪费了。这个问题可以通过单独使用 core-js 的某个类库来解决，core-js 都是分开的。</li>
+<li>babel-polyfill 会污染全局变量，给很多类的原型链上都作了修改，如果我们开发的也是一个类库供其他开发者使用，这种情况就会变得非常不可控。</li>
+</ul>
+<p>因此在实际使用中，如果我们无法忍受这两个缺点(尤其是第二个)，通常我们会倾向于使用 babel-plugin-transform-runtime。<br>但如果代码中包含高版本 js 中类型的实例方法 (例如 [1,2,3].includes(1))，这还是要使用 polyfill。</p>
+<h3 id="babel-runtime-和-babel-plugin-transform-runtime"><a href="#babel-runtime-和-babel-plugin-transform-runtime" class="headerlink" title="babel-runtime 和 babel-plugin-transform-runtime"></a>babel-runtime 和 babel-plugin-transform-runtime</h3><p>我们时常在项目中看到 .babelrc 中使用 babel-plugin-transform-runtime，而 package.json 中的 dependencies (注意不是 devDependencies) 又包含了 babel-runtime，那这两个是不是成套使用的呢？他们又起什么作用呢？</p>
+<p>先说 babel-plugin-transform-runtime。</p>
+<p>babel 会转换 js 语法，之前已经提过了。以 async/await 举例，如果不使用这个 plugin (即默认情况)，转换后的代码大概是：<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// babel 添加一个方法，把 async 转化为 generator</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">_asyncToGenerator</span>(<span class="params">fn</span>) </span>&#123; <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;....&#125;&#125; <span class="comment">// 很长很长一段</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 具体使用处</span></span><br><span class="line"><span class="keyword">var</span> _ref = _asyncToGenerator(<span class="function"><span class="keyword">function</span>* (<span class="params">arg1, arg2</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">yield</span> (<span class="number">0</span>, something)(arg1, arg2);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>这个 _asyncToGenerator 在当前文件被定义，然后被使用了，以替换源代码的 await。但每个被转化的文件都会插入一段 _asyncToGenerator 这就导致重复和浪费了。</p>
+<p>在使用了 babel-plugin-transform-runtime 了之后，转化后的代码会变成<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 从直接定义改为引用，这样就不会重复定义了。</span></span><br><span class="line"><span class="keyword">var</span> _asyncToGenerator2 = <span class="built_in">require</span>(<span class="string">'babel-runtime/helpers/asyncToGenerator'</span>);</span><br><span class="line"><span class="keyword">var</span> _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 具体使用处是一样的</span></span><br><span class="line"><span class="keyword">var</span> _ref = _asyncToGenerator3(<span class="function"><span class="keyword">function</span>* (<span class="params">arg1, arg2</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">yield</span> (<span class="number">0</span>, something)(arg1, arg2);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>从定义方法改成引用，那重复定义就变成了重复引用，就不存在代码重复的问题了。</p>
+<p>但在这里，我们也发现 babel-runtime 出场了，它就是这些方法的集合处，也因此，在使用 babel-plugin-transform-runtime 的时候必须把 babel-runtime 当做依赖。</p>
+<p>再说 babel-runtime，它内部集成了</p>
+<ul>
+<li>core-js: 转换一些内置类 (Promise, Symbols等等) 和静态方法 (Array.from 等)。绝大部分转换是这里做的。自动引入。</li>
+<li>regenerator: 作为 core-js 的拾遗补漏，主要是 generator/yield 和 async/await 两组的支持。当代码中有使用 generators/async 时自动引入。</li>
+<li>helpers, 如上面的 asyncToGenerator 就是其中之一，其他还有如 jsx, classCallCheck 等等，可以查看 babel-helpers。在代码中有内置的 helpers 使用时(如上面的第一段代码)移除定义，并插入引用(于是就变成了第二段代码)。<br>babel-plugin-transform-runtime 不支持 实例方法 (例如 [1,2,3].includes(1))</li>
+</ul>
+<h3 id="Babel-7-x"><a href="#Babel-7-x" class="headerlink" title="Babel 7.x"></a>Babel 7.x</h3><h4 id="preset-的变更：淘汰-es201x，删除-stage-x，强推-env-重点"><a href="#preset-的变更：淘汰-es201x，删除-stage-x，强推-env-重点" class="headerlink" title="preset 的变更：淘汰 es201x，删除 stage-x，强推 env (重点)"></a>preset 的变更：淘汰 es201x，删除 stage-x，强推 env (重点)</h4><p>淘汰 es201x 的目的是把选择环境的工作交给 env 自动进行，而不需要开发者投入精力。凡是使用 es201x 的开发者，都应当使用 env 进行替换。但这里的淘汰 (原文 deprecated) 并不是删除，只是不推荐使用了，不好说 babel 8 就真的删了。</p>
+<p>与之相比，stage-x 就没那么好运了，它们直接被删了。这是因为 babel 团队认为为这些 “不稳定的草案” 花费精力去更新 preset 相当浪费。stage-x 虽然删除了，但它包含的插件并没有删除(只是被更名了，可以看下面一节)，我们依然可以显式地声明这些插件来获得等价的效果。完整列表</p>
+<p>为了减少开发者替换配置文件的机械工作，babel 开发了一款 babel-upgrade 的工具，它会检测 babel 配置中的 stage-x 并且替换成对应的 plugins。除此之外它还有其他功能，我们一会儿再详细看。(总之目的就是让你更加平滑地迁移到 babel 7)</p>
+<h4 id="npm-package-名称的变化"><a href="#npm-package-名称的变化" class="headerlink" title="npm package 名称的变化"></a>npm package 名称的变化</h4><p>这是 babel 7 的一个重大变化，把所有 babel-<em> 重命名为 @babel/</em>，例如：</p>
+<p>babel-cli 变成了 @babel/cli。<br>babel-preset-env 变成了 @babel/preset-env。进一步，还可以省略 preset 而简写为 @babel/env。<br>babel-plugin-transform-arrow-functions 变成了 @babel/plugin-transform-arrow-functions。和 preset 一样，plugin 也可以省略，于是简写为 @babel/transform-arrow-functions。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/25/git操作记录/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弥生的狗子">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="弥生">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/25/git操作记录/" itemprop="url">git操作记录</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-08-25T09:19:38+08:00">
+                2018-08-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/工具方法/" itemprop="url" rel="index">
+                    <span itemprop="name">工具方法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>git作为最常用的版本控制工具，重要性不言而喻。平时使用的时候有些命令并没有非常理解使用场景，此文用来记录git的操作和其使用场景，以及git的一些概念。</p>
+<h2 id="会生成版本的操作"><a href="#会生成版本的操作" class="headerlink" title="会生成版本的操作"></a>会生成版本的操作</h2><p>1、commit<br>2、非fast forward模式的分支合并<br>注：fast forward模式：比如从master上拉出一个dev分支，dev分支进行了多次commit，而后将dev分支合并到，在dev分支合并到master之前master分支没有任何提交，这个情况下，git会采用fast forward模式进行merge。采用这种模式，如果将dev分支删除之后不会分支的信息将会丢失。当然我们可以使用–no-ff 强制禁止使用fast forward模式。</p>
+<h2 id="提交类操作"><a href="#提交类操作" class="headerlink" title="提交类操作"></a>提交类操作</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git add &lt;file&gt;/.   // 将本地变更提交到暂存区(stage)</span><br><span class="line">git commit -m &quot;&lt;message&gt;&quot;   // 将暂存区(stage)内容一次性提交到本地仓库中，生成一次新的提交</span><br><span class="line">git push &lt;branch&gt;  // 将本地仓库的修改提交到远端仓库</span><br></pre></td></tr></table></figure>
+<h2 id="暂存类操作"><a href="#暂存类操作" class="headerlink" title="暂存类操作"></a>暂存类操作</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git stash  // 将工作区改动临时存储起来</span><br><span class="line">git stash list // 查看临时存储的信息</span><br><span class="line">git stash apply // 将最近一次放入临时存储区域的改动取出，临时存储区域该次存储不删除</span><br><span class="line">git stash drop &lt;version&gt;  // 删除某次存入存储区域的改动</span><br><span class="line">git stash pop  //  将最近一次放入临时存储区域的改动取出，临时存储区域该次存储会被删除</span><br></pre></td></tr></table></figure>
+<h2 id="关联操作"><a href="#关联操作" class="headerlink" title="关联操作"></a>关联操作</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push --set-upstream origin bug  // 本地新建分支，远端没有该分支，这样push可以在远端新建对应跟踪分支</span><br></pre></td></tr></table></figure>
+<h2 id="查询操作"><a href="#查询操作" class="headerlink" title="查询操作"></a>查询操作</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git log --pretty=oneline  // 查看当前分支所有版本信息</span><br><span class="line">git reflog  // 查看每一次git操作，包括 commit checkout reset merge</span><br><span class="line">git status  // 查看当前分支的状态</span><br><span class="line">git remote -v  // 查看远程分支的信息，包括fetch和push地址</span><br></pre></td></tr></table></figure>
+<h2 id="撤销回退操作"><a href="#撤销回退操作" class="headerlink" title="撤销回退操作"></a>撤销回退操作</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git reset --hard HEAD/version // 当前分支回退到对应版本，HEAD^表示上一版本，HEAD^^, HEAD~100,一次类推</span><br><span class="line">git checkout -- &lt;file&gt;/*  // 撤销未提交到暂存区(stage)的工作区内容的改动</span><br><span class="line">git reset HEAD &lt;file&gt;/*   // 将暂存区(stage)的内容回送回到工作区(unstage),然后可以使用git checkout -- &lt;file&gt;/* 撤销此次的内容改动</span><br></pre></td></tr></table></figure>
+<h2 id="切换操作"><a href="#切换操作" class="headerlink" title="切换操作"></a>切换操作</h2><p>git checkout <branch>  // 切换分支<br>git checkout -b <branch> // 新建分支并切换到新建的分支</branch></branch></p>
+<h2 id="新建操作"><a href="#新建操作" class="headerlink" title="新建操作"></a>新建操作</h2><p>git branch <branch> // 新建分支</branch></p>
+<h2 id="删除操作"><a href="#删除操作" class="headerlink" title="删除操作"></a>删除操作</h2><p>git branch -d <branch>  // 删除分支<br>git branch -D <branch>  // 强制删除</branch></branch></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/18/WebAssembly介绍/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -467,7 +810,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -478,7 +821,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">11</span>
                   <span class="site-state-item-name">categories</span>
                 </a>
               </div>

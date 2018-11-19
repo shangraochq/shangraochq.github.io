@@ -239,6 +239,305 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/19/webpack/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弥生的狗子">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="弥生">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/11/19/webpack/" itemprop="url">webpack4 常用配置</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-11-19T19:45:49+08:00">
+                2018-11-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/前端工程化/" itemprop="url" rel="index">
+                    <span itemprop="name">前端工程化</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>本文通过注释的方法，解释常见的webpack4配置<br>配置分为4个文件，分别为：<br>webpack.base.config.js：dev 和 prod 通用的配置<br>webpack.dev.config.js：dev 的配置<br>webpack.prod.config.js：prod 的配置<br>webpack.dll.config.js：第三方包拆分配置</p>
+<p>以下是webpack.base.config.js配置：<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>);</span><br><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">    <span class="comment">// 多入口打包，打包成多个文件，适合用在非SPA的多页面场景</span></span><br><span class="line">    entry: &#123;</span><br><span class="line">        index: <span class="string">"./src/index.js"</span>,</span><br><span class="line">        mvvm: <span class="string">"./src/mvvm.js"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="comment">// 写成数组的方式就可以打包多入口文件，不过打包后的文件会合成了一个</span></span><br><span class="line">    <span class="comment">// entry: [</span></span><br><span class="line">    <span class="comment">//     "./src/index.js", "./src/mvvm.js"</span></span><br><span class="line">    <span class="comment">// ],</span></span><br><span class="line">    <span class="built_in">module</span>: &#123;</span><br><span class="line">        rules: [</span><br><span class="line">            &#123;</span><br><span class="line">                test: <span class="regexp">/\.(js|vue)$/</span>,</span><br><span class="line">                loader: <span class="string">'eslint-loader'</span>,</span><br><span class="line">                enforce: <span class="string">'pre'</span>,</span><br><span class="line">                include: [path.resolve(__dirname, <span class="string">'src'</span>)],</span><br><span class="line">                options: &#123;</span><br><span class="line">                    <span class="comment">// 报错的输出格式</span></span><br><span class="line">                    formatter: <span class="built_in">require</span>(<span class="string">'eslint-friendly-formatter'</span>)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                test: <span class="regexp">/\.vue$/</span>,</span><br><span class="line">                exclude: <span class="regexp">/node_modules/</span>,</span><br><span class="line">                use: [</span><br><span class="line">                    <span class="comment">// 'thread-loader',</span></span><br><span class="line">                    <span class="comment">// 'cache-loader',</span></span><br><span class="line">                    <span class="string">'vue-loader'</span></span><br><span class="line">                ]</span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                test: <span class="regexp">/\.js$/</span>,</span><br><span class="line">                exclude: <span class="regexp">/node_modules/</span>,</span><br><span class="line">                <span class="comment">// 根目录下需要配置.babelrc文件</span></span><br><span class="line">                loader: <span class="string">"babel-loader"</span></span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                test: <span class="regexp">/\.(png|jpe?g|gif|svg)(\?.*)?$/</span>,</span><br><span class="line">                loader: <span class="string">'url-loader'</span>,</span><br><span class="line">                options: &#123;</span><br><span class="line">                    name: <span class="string">'img/[name].[ext]'</span>,</span><br><span class="line">                    <span class="comment">// 小于10K的图片自动转成base64格式，并且不会存在实体图片</span></span><br><span class="line">                    limit: <span class="number">10000</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// 处理字体等</span></span><br><span class="line">                test: <span class="regexp">/\.(woff2?|eot|ttf|otf)(\?.*)?$/</span>,</span><br><span class="line">                loader: <span class="string">'url-loader'</span>,</span><br><span class="line">                options: &#123;</span><br><span class="line">                    name: <span class="string">'fonts/[name].[ext]'</span>,</span><br><span class="line">                    limit: <span class="number">10000</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        ]</span><br><span class="line">    &#125;,</span><br><span class="line">    resolve: &#123;</span><br><span class="line">        <span class="comment">// 引入时不需要带后缀</span></span><br><span class="line">        extensions: [<span class="string">'.js'</span>, <span class="string">'.vue'</span>, <span class="string">'.json'</span>, <span class="string">'.ts'</span>, <span class="string">'.tsx'</span>],</span><br><span class="line">        <span class="comment">// 配置别名</span></span><br><span class="line">        alias: &#123;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="comment">// 自定义控制台输出日志，详细配置见官方文档</span></span><br><span class="line">    stats: &#123;</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>以下是webpack.dev.config.js配置：<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> HtmlWebPackPlugin = <span class="built_in">require</span>(<span class="string">"html-webpack-plugin"</span>);</span><br><span class="line"><span class="keyword">const</span> merge = <span class="built_in">require</span>(<span class="string">'webpack-merge'</span>);</span><br><span class="line"><span class="keyword">const</span> baseConfig = <span class="built_in">require</span>(<span class="string">'./webpack.base.conf.js'</span>);</span><br><span class="line"><span class="built_in">module</span>.exports = merge(baseConfig, &#123;</span><br><span class="line">    <span class="built_in">module</span>: &#123;</span><br><span class="line">        output: &#123;</span><br><span class="line">            filename: <span class="string">'[name].js'</span>,</span><br><span class="line">            chunkFilename: <span class="string">'[name].js'</span>,</span><br><span class="line">            path: path.join(__dirname, <span class="string">'build'</span>),</span><br><span class="line">            publicPath: <span class="string">'/'</span></span><br><span class="line">        &#125;,</span><br><span class="line">        rules: [</span><br><span class="line">            &#123;</span><br><span class="line">                test: <span class="regexp">/\.css$/</span>,</span><br><span class="line">                exclude: <span class="regexp">/node_modules/</span>,</span><br><span class="line">                use: [</span><br><span class="line">                    <span class="comment">// style-loader将css文件是以行内样式style的标签写进打包后的html页面中</span></span><br><span class="line">                    <span class="string">'style-loader'</span>,</span><br><span class="line">                    <span class="string">'css-loader'</span>, <span class="comment">// 将css模块处理成webpack的模块</span></span><br><span class="line">                    <span class="string">'postcss-loader'</span>, <span class="comment">// 为样式属性添加浏览器前缀</span></span><br><span class="line">                ]</span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                test: <span class="regexp">/\.scss$/</span>,</span><br><span class="line">                exclude: <span class="regexp">/node_modules/</span>,</span><br><span class="line">                use: [</span><br><span class="line">                    <span class="string">'style-loader'</span>,</span><br><span class="line">                    <span class="string">'css-loader'</span>,</span><br><span class="line">                    <span class="string">'postcss-loader'</span>,</span><br><span class="line">                    <span class="string">'sass-loader'</span></span><br><span class="line">                ]</span><br><span class="line">            &#125;</span><br><span class="line">        ]</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="comment">// 为每一个chunk生成一个source map，</span></span><br><span class="line">    <span class="comment">// 用于映射打包后代码和源代码之间的关系，</span></span><br><span class="line">    <span class="comment">// 可以增强调试体验，或者提供给前端监控工具</span></span><br><span class="line">    <span class="comment">// 使用，能够精准定位报错代码的位置</span></span><br><span class="line">    devtool: <span class="string">'#cheap-module-eval-source-map'</span>,</span><br><span class="line">    devServer: &#123;</span><br><span class="line">        contentBase: <span class="string">'./dist'</span>,</span><br><span class="line">        host: <span class="string">'localhost'</span>, <span class="comment">// 默认是localhost</span></span><br><span class="line">        port: <span class="number">3000</span>, <span class="comment">// 端口</span></span><br><span class="line">        open: <span class="literal">true</span>, <span class="comment">// 自动打开浏览器</span></span><br><span class="line">        hot: <span class="literal">true</span>, <span class="comment">// 开启热更新</span></span><br><span class="line">        stats: <span class="string">'minimal'</span>, <span class="comment">// 日志模式</span></span><br><span class="line">        inline: <span class="literal">true</span>, <span class="comment">// 当监听到文件变动时，刷新浏览器页面</span></span><br><span class="line">        <span class="comment">// webpack-dev-server内部起了一个express的服务，通过before配置</span></span><br><span class="line">        <span class="comment">// 可以在在服务内部的所有其他中间件之前</span></span><br><span class="line">        <span class="comment">// 提供执行自定义中间件的功能。</span></span><br><span class="line">        <span class="comment">// 这可以用来配置自定义处理程序</span></span><br><span class="line">        before(app) &#123;</span><br><span class="line">            app.get(<span class="string">'/some/path'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>) </span>&#123;</span><br><span class="line">                res.json(&#123; <span class="attr">custom</span>: <span class="string">'response'</span> &#125;);</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 在服务内部的所有其他中间件之后， 提供执行自定义中间件的功能。</span></span><br><span class="line">        <span class="comment">// 例如：可以配置请求mock和proxy配置</span></span><br><span class="line">        after(app) &#123;</span><br><span class="line">            <span class="comment">// mock</span></span><br><span class="line">            app.use(<span class="built_in">require</span>(<span class="string">'./dev-middleware/mock'</span>)());</span><br><span class="line">            <span class="comment">// proxy</span></span><br><span class="line">            app.use(<span class="built_in">require</span>(<span class="string">'./dev-middleware/proxy'</span>)());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="comment">// webpack4 提供的新特性，通过配置development 或者 production</span></span><br><span class="line">    <span class="comment">// webpack会根据不同的模式，默认开启一些内置优化，</span></span><br><span class="line">    <span class="comment">// 比如在生产模式下回默认使用UglifyJsPlugin，具体见官方文档</span></span><br><span class="line">    mode: <span class="string">'development'</span>,</span><br><span class="line">    plugins: [</span><br><span class="line">        <span class="comment">// 为html文件中引入的外部资源如script、link动态添加每次compile后的hash，</span></span><br><span class="line">        <span class="comment">// 防止引用缓存的外部文件问题</span></span><br><span class="line">        <span class="keyword">new</span> HtmlWebPackPlugin(&#123;</span><br><span class="line">            title: <span class="string">"title"</span>,</span><br><span class="line">            template: <span class="string">"index.ejs"</span>, <span class="comment">// 使用某个页面当模板来用，不设置插件会使用默认模板</span></span><br><span class="line">            filename: <span class="string">"index.html"</span>,</span><br><span class="line">            hash: <span class="literal">true</span>, <span class="comment">// 会在打包好的bundle.js后面加上hash串</span></span><br><span class="line">        &#125;)</span><br><span class="line">    ]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="comment">// dev情况下由于devServer帮我们把文件放到内存中了，</span></span><br><span class="line"><span class="comment">// 所以并不会输出打包后的build文件夹</span></span><br></pre></td></tr></table></figure></p>
+<p>以下是webpack.prod.config.js配置：<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> webpack = <span class="built_in">require</span>(<span class="string">'webpack'</span>);</span><br><span class="line"><span class="keyword">const</span> MiniCssExtractPlugin = <span class="built_in">require</span>(<span class="string">"mini-css-extract-plugin"</span>);</span><br><span class="line"><span class="keyword">const</span> HtmlWebPackPlugin = <span class="built_in">require</span>(<span class="string">"html-webpack-plugin"</span>);</span><br><span class="line"><span class="keyword">const</span> merge = <span class="built_in">require</span>(<span class="string">'webpack-merge'</span>);</span><br><span class="line"><span class="keyword">const</span> baseConfig = <span class="built_in">require</span>(<span class="string">'./webpack.dev.config.js'</span>);</span><br><span class="line"><span class="keyword">const</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>);</span><br><span class="line"><span class="keyword">const</span> buildPath = path.resolve(__dirname, <span class="string">'../build'</span>);</span><br><span class="line"><span class="keyword">const</span> CleanWebpackPlugin = <span class="built_in">require</span>(<span class="string">'clean-webpack-plugin'</span>);</span><br><span class="line"><span class="built_in">module</span>.exports = merge(baseConfig, &#123;</span><br><span class="line">    <span class="built_in">module</span>: &#123;</span><br><span class="line">        output: &#123;</span><br><span class="line">            <span class="comment">// hash: 模块标识符(module identifier)的 hash</span></span><br><span class="line">            <span class="comment">// chunkhash: chunk 内容的 hash</span></span><br><span class="line">            <span class="comment">// name: 模块名称</span></span><br><span class="line">            <span class="comment">// [hash] 和 [chunkhash] 的长度可以使用 [hash:16]（默认为20）来指定</span></span><br><span class="line">            filename: <span class="string">'js/app.[chunkhash:8].js'</span>,</span><br><span class="line">            chunkFilename: <span class="string">'js/[name].[chunkhash:8].js'</span>,</span><br><span class="line">            path: path.join(__dirname, <span class="string">'build'</span>) <span class="comment">// 打包后的目录，必须是绝对路径</span></span><br><span class="line">            <span class="comment">// 此选项指定在浏览器中所引用的「此输出目录对应的公开 URL」</span></span><br><span class="line">            <span class="comment">// 相对 URL(relative URL) 会被相对于 HTML 页面</span></span><br><span class="line">            <span class="comment">// One of the below</span></span><br><span class="line">            <span class="comment">// publicPath: 'https://cdn.example.com/assets/', // CDN（总是 HTTPS 协议）</span></span><br><span class="line">            <span class="comment">// publicPath: '//cdn.example.com/assets/', // CDN（协议相同）</span></span><br><span class="line">            <span class="comment">// publicPath: '/assets/', // 相对于服务(server-relative)</span></span><br><span class="line">            <span class="comment">// publicPath: 'assets/', // 相对于 HTML 页面</span></span><br><span class="line">            <span class="comment">// publicPath: '../assets/', // 相对于 HTML 页面</span></span><br><span class="line">            <span class="comment">// publicPath: '', // 相对于 HTML 页面（目录相同）</span></span><br><span class="line">            publicPath: <span class="string">'/template/'</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">        rules: [&#123;</span><br><span class="line">                test: <span class="regexp">/\.js$/</span>,</span><br><span class="line">                exclude: <span class="regexp">/node_modules/</span>,</span><br><span class="line">                loader: <span class="string">"babel-loader"</span></span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                test: <span class="regexp">/\.css$/</span>,</span><br><span class="line">                exclude: <span class="regexp">/node_modules/</span>,</span><br><span class="line">                use: [</span><br><span class="line">                    <span class="comment">// 如果样式很多的话，我们更希望直接用link的方式引入进去，</span></span><br><span class="line">                    <span class="comment">// 这时候需要把css拆分出来,MiniCssExtractPlugin作用就是</span></span><br><span class="line">                    <span class="comment">// 把打包到js文件中的css文件抽离成单独的css文件，以Link的方式引入</span></span><br><span class="line">                    MiniCssExtractPlugin.loader,</span><br><span class="line">                    <span class="string">'css-loader'</span>,</span><br><span class="line">                    <span class="string">'postcss-loader'</span></span><br><span class="line">                ]</span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                test: <span class="regexp">/\.scss$/</span>,</span><br><span class="line">                exclude: <span class="regexp">/node_modules/</span>,</span><br><span class="line">                use: [</span><br><span class="line">                    MiniCssExtractPlugin.loader,</span><br><span class="line">                    <span class="string">'css-loader'</span>, <span class="comment">// 将css模块处理成webpack的模块</span></span><br><span class="line">                    <span class="string">'postcss-loader'</span>, <span class="comment">// 为样式属性添加浏览器前缀</span></span><br><span class="line">                    <span class="string">'sass-loader'</span></span><br><span class="line">                ]</span><br><span class="line">            &#125;</span><br><span class="line">        ]</span><br><span class="line">    &#125;,</span><br><span class="line">    mode: <span class="string">'production'</span>,</span><br><span class="line">    optimization: &#123;</span><br><span class="line">        <span class="comment">// webpack4引入了的新特性，</span></span><br><span class="line">        <span class="comment">// 用于替代CommonsChunkPlugin插件</span></span><br><span class="line">        <span class="comment">// 来完成公共包提取工作</span></span><br><span class="line">        splitChunks: &#123;</span><br><span class="line">            cacheGroups: &#123;</span><br><span class="line">                vendors: &#123;</span><br><span class="line">                    test: <span class="regexp">/[\\/]node_modules[\\/]/</span>,</span><br><span class="line">                    name: <span class="string">'vendors'</span>,</span><br><span class="line">                    chunks: <span class="string">'initial'</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    plugins: [</span><br><span class="line">        <span class="comment">// 用于重新构建前清理之前构建的目录</span></span><br><span class="line">        <span class="keyword">new</span> CleanWebpackPlugin(<span class="string">'build'</span>),</span><br><span class="line">        <span class="keyword">new</span> MiniCssExtractPlugin(&#123;</span><br><span class="line">            filename: <span class="string">"css/[name].css"</span>,</span><br><span class="line">            chunkFilename: <span class="string">"css/[name].css"</span></span><br><span class="line">        &#125;),</span><br><span class="line">        <span class="comment">// 为html文件中引入的外部资源如script、link动态添加每次compile后的hash，</span></span><br><span class="line">        <span class="comment">// 防止引用缓存的外部文件问题</span></span><br><span class="line">        <span class="keyword">new</span> HtmlWebPackPlugin(&#123;</span><br><span class="line">            title: <span class="string">"my-vue"</span>,</span><br><span class="line">            template: <span class="string">"index.ejs"</span>, <span class="comment">// 使用某个页面当模板来用，不设置插件会使用默认模板</span></span><br><span class="line">            filename: <span class="string">"index.html"</span>,</span><br><span class="line">            <span class="comment">// hash: true, // 会在打包好的bundle.js后面加上hash串</span></span><br><span class="line">            <span class="comment">// chunks: ["index"] // 对应的入口文件</span></span><br><span class="line">        &#125;),</span><br><span class="line">        <span class="comment">// 配置多页面</span></span><br><span class="line">        <span class="comment">// new HtmlWebPackPlugin(&#123;</span></span><br><span class="line">        <span class="comment">//     title: "my-vue-mvvm",</span></span><br><span class="line">        <span class="comment">//     template: "index.ejs", // 使用某个页面当模板来用，不设置插件会使用默认模板</span></span><br><span class="line">        <span class="comment">//     filename: "mvvm.html",</span></span><br><span class="line">        <span class="comment">//     chunks: ["mvvm"] // 对应的入口文件</span></span><br><span class="line">        <span class="comment">// &#125;),</span></span><br><span class="line">        <span class="comment">// 配合DLLPlugin使用，见下文</span></span><br><span class="line">        <span class="keyword">new</span> webpack.DllReferencePlugin(&#123;</span><br><span class="line">            context: __dirname,</span><br><span class="line">            manifest: <span class="built_in">require</span>(path.resolve(__dirname, <span class="string">`./build/dll/thirdBundle-manifest.json`</span>))</span><br><span class="line">        &#125;)</span><br><span class="line">    ]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>最后介绍下 webpack.dll.config.js 配置。<br>在使用webpack进行打包时候，对于依赖的第三方库，比如vue，vuex等这些不会修改的依赖，我们可以让它和我们自己编写的代码分开打包，这样做的好处是每次更改我本地代码的文件的时候，webpack只需要打包我项目本身的文件代码，而不会再去编译第三方库，那么第三方库在第一次打包的时候只打包一次，以后只要我们不升级第三方包的时候，那么webpack就不会对这些库去打包，这样的可以快速的提高打包的速度。因此为了解决这个问题，DllPlugin 和 DllReferencePlugin插件就产生了。webpack.dll.config.js 就是用来配置 DllPlugin 的。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> webpack = <span class="built_in">require</span>(<span class="string">'webpack'</span>);</span><br><span class="line"><span class="keyword">const</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = <span class="function">(<span class="params">env</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        entry: &#123;</span><br><span class="line">            <span class="comment">// 将不会变化的第三方包打到一个单独的bundle里</span></span><br><span class="line">            bundle: [</span><br><span class="line">                <span class="string">'vue'</span>,</span><br><span class="line">                <span class="string">'vue-router'</span>,</span><br><span class="line">                <span class="string">'vuex'</span>,</span><br><span class="line">                <span class="string">'axios'</span>,</span><br><span class="line">                <span class="string">'element-ui'</span></span><br><span class="line">            ]</span><br><span class="line">        &#125;,</span><br><span class="line">        output: &#123;</span><br><span class="line">            path: path.join(__dirname, <span class="string">'build'</span>)</span><br><span class="line">            filename: <span class="string">'[name].dll.js'</span>,</span><br><span class="line">            library: <span class="string">'[name]_library'</span></span><br><span class="line">        &#125;,</span><br><span class="line">        mode: <span class="string">'production'</span>,</span><br><span class="line">        plugins: [</span><br><span class="line">            <span class="keyword">new</span> webpack.DllPlugin(&#123;</span><br><span class="line">                path: path.join(__dirname, <span class="string">'./build/dll'</span>, <span class="string">'[name]-manifest.json'</span>),</span><br><span class="line">                name: <span class="string">'[name]_library'</span>,</span><br><span class="line">                context: __dirname</span><br><span class="line">            &#125;)</span><br><span class="line">        ]</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>DLLPlugin 这个插件把所有的第三方库依赖打包到一个bundle里面，还会生成一个 bundle-manifest.json文件。bundle-manifest.json文件是一个第三方库的映射。<br>DllReferencePlugin 这个插件是在webpack.prod.config.js中使用的，该插件的作用是将webpack.dll.config.js打包生成的budle.dll.js文件引用到需要的预编译的依赖上来。bundle-manifest.json文件会包含所有库代码的一个索引，当在使用webpack.prod.config.js配置打包文件时，会使用DllReferencePlugin插件读取bundle-manifest.json文件，看看是否有该第三方库。</p>
+<p>总结来说，第一次使用 webpack.dll.config.js 文件会对第三方库打包，打包完成后就不会再打包它了，然后每次运行 webpack.prod.config.js配置打包时，只会打包项目自身的代码，当需要使用第三方依赖的时候，会使用 DllReferencePlugin插件去读取第三方依赖库。所以说它的打包速度会得到一个很大的提升。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/15/阅读源码方法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弥生的狗子">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="弥生">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/11/15/阅读源码方法/" itemprop="url">阅读源码方法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-11-15T21:33:39+08:00">
+                2018-11-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/学习方法/" itemprop="url" rel="index">
+                    <span itemprop="name">学习方法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>此处用来记录学习源码过程中，自己总结的效果较好的学习方法。</p>
+<ul>
+<li>阅读源码的时候，先看代码的整体流程和思路，画出流程图记录思路，可以先用笔画出流程图，之后整理成电子记录。</li>
+<li>整理出整体思路之后，可以根据自己感兴趣的部门阅读代码细节，重要技巧做笔记</li>
+</ul>
+<p>## 不良习惯</p>
+<ul>
+<li>没有把握代码整体思路的情况下，死扣细节，过后毫无印象，很不好</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/15/this指向和箭头函数/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1494,349 +1793,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/31/Babel介绍/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="弥生的狗子">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="弥生">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/08/31/Babel介绍/" itemprop="url">Babel介绍</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-08-31T09:22:25+08:00">
-                2018-08-31
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/项目搭建相关/" itemprop="url" rel="index">
-                    <span itemprop="name">项目搭建相关</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Babel的作用"><a href="#Babel的作用" class="headerlink" title="Babel的作用"></a>Babel的作用</h3><p>简单来说把 JavaScript 中 es2015/2016/2017/2046 的新语法转化为 es5，让低端运行环境(如浏览器和 node )能够认识并执行</p>
-<h3 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h3><h4 id="使用单体文件"><a href="#使用单体文件" class="headerlink" title="使用单体文件"></a>使用单体文件</h4><h4 id="命令行"><a href="#命令行" class="headerlink" title="命令行"></a>命令行</h4><p>多见于 package.json 中的 scripts 段落中的某条命令</p>
-<h4 id="构建工具的插件"><a href="#构建工具的插件" class="headerlink" title="构建工具的插件"></a>构建工具的插件</h4><p>直接集成到构建工具中</p>
-<h3 id="Babel工作流程"><a href="#Babel工作流程" class="headerlink" title="Babel工作流程"></a>Babel工作流程</h3><p>babel 本身不具有任何转化功能，它把转化的功能都分解到一个个 plugin 里面。因此当我们不配置任何插件时，经过 babel 的代码和输入是相同的</p>
-<h4 id="解析"><a href="#解析" class="headerlink" title="解析"></a>解析</h4><h4 id="转换"><a href="#转换" class="headerlink" title="转换"></a>转换</h4><h4 id="生成"><a href="#生成" class="headerlink" title="生成"></a>生成</h4><h3 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h3><ul>
-<li>将插件的名字增加到配置文件中 (根目录下创建 .babelrc 或者 package.json 的 babel 里面，格式相同)</li>
-<li>使用 npm install babel-plugin-xxx 进行安装<h4 id="preset"><a href="#preset" class="headerlink" title="preset"></a>preset</h4>比如 es2015 是一套规范，包含大概十几二十个转译插件。如果每次要开发者一个个添加并安装，配置文件很长不说，npm install 的时间也会很长<br>为了解决这个问题，babel 还提供了一组插件的集合。因为常用，所以不必重复定义 &amp; 安装<br>preset 分为以下几种:<br>官方presets:</li>
-<li>@babel/preset-env</li>
-<li>@babel/preset-flow</li>
-<li>@babel/preset-react</li>
-<li>@babel/preset-typescript</li>
-<li>…<br>Stage-X (Experimental Presets)</li>
-<li>Stage 0 - 稻草人: 只是一个想法，经过 TC39 成员提出即可。</li>
-<li>Stage 1 - 提案: 初步尝试。</li>
-<li>Stage 2 - 初稿: 完成初步规范。</li>
-<li>Stage 3 - 候选: 完成规范和浏览器初步实现。</li>
-<li>Stage 4 - 完成: 将被添加到下一年度发布。<br>此外，低一级的 stage 会包含所有高级 stage 的内容，例如 stage-1 会包含 stage-2, stage-3 的所有内容。<br>stage-4 在下一年更新会直接放到 env 中，所以没有单独的 stage-4 可供使用。<h4 id="插件和-preset-的配置项"><a href="#插件和-preset-的配置项" class="headerlink" title="插件和 preset 的配置项"></a>插件和 preset 的配置项</h4>简略情况下，插件和 preset 只要列出字符串格式的名字即可。但如果某个 preset 或者插件需要一些配置项(或者说参数)，就需要把自己先变成数组。第一个元素依然是字符串，表示自己的名字；第二个元素是一个对象，即配置对象。<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">"presets": [</span><br><span class="line">    // 带了配置项，自己变成数组</span><br><span class="line">    [</span><br><span class="line">        // 第一个元素依然是名字</span><br><span class="line">        <span class="string">"env"</span>,</span><br><span class="line">        // 第二个元素是对象，列出配置项</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">"module"</span>: <span class="literal">false</span></span><br><span class="line">        &#125;</span><br><span class="line">    ],</span><br><span class="line"></span><br><span class="line">    // 不带配置项，直接列出名字</span><br><span class="line">    <span class="string">"stage-2"</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h3 id="插件执行顺序"><a href="#插件执行顺序" class="headerlink" title="插件执行顺序"></a>插件执行顺序</h3><ul>
-<li>Plugin 会运行在 Preset 之前。</li>
-<li>Plugin 会从前到后顺序执行。</li>
-<li>Preset 的顺序则 刚好相反(从后向前)。</li>
-</ul>
-<h3 id="env"><a href="#env" class="headerlink" title="env"></a>env</h3><p>env 的核心目的是通过配置得知目标环境的特点，然后只做必要的转换。例如目标浏览器支持 es2015，那么 es2015 这个 preset 其实是不需要的，于是代码就可以小一点(一般转化后的代码总是更长)，构建时间也可以缩短一些。<br>如果不写任何配置项，env 等价于 latest，也等价于 es2015 + es2016 + es2017 三个相加(不包含 stage-x 中的插件)<br>例如：<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"presets"</span>: [</span><br><span class="line">    [<span class="string">"env"</span>, &#123;</span><br><span class="line">      <span class="attr">"targets"</span>: &#123;</span><br><span class="line">        <span class="attr">"browsers"</span>: [<span class="string">"last 2 versions"</span>, <span class="string">"safari &gt;= 7"</span>]</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;]</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>如上配置将考虑所有浏览器的最新2个版本(safari大于等于7.0的版本)的特性，将必要的代码进行转换。而这些版本已有的功能就不进行转化了<br>具体写法参照<a href="https://babeljs.io/docs/en/babel-preset-env" target="_blank" rel="noopener">官网</a>或者<a href="https://github.com/browserslist/browserslist" target="_blank" rel="noopener">browserslist</a>。条件对应的环境可以在这里<a href="http://browserl.ist/" target="_blank" rel="noopener">查询</a></p>
-<p>另外一个有用的配置项是 modules。它的取值可以是 amd, umd, systemjs, commonjs 和 false。这可以让 babel 以特定的模块化格式来输出代码。如果选择 false 就不进行模块化处理。</p>
-<h3 id="babel-polyfill"><a href="#babel-polyfill" class="headerlink" title="babel-polyfill"></a>babel-polyfill</h3><p>babel 默认只转换 js 语法，而不转换新的 API，比如 Iterator、Generator、Set、Maps、Proxy、Reflect、Symbol、Promise 等全局对象，以及一些定义在全局对象上的方法(比如 Object.assign)都不会转码。<br>举例来说，es2015 在 Array 对象上新增了 Array.from 方法。babel 就不会转码这个方法。如果想让这个方法运行，必须使用 babel-polyfill。(内部集成了 core-js 和 regenerator)<br>使用时，在所有代码运行之前增加 require(‘babel-polyfill’)。或者更常规的操作是在 webpack.config.js 中将 babel-polyfill 作为第一个 entry。因此必须把 babel-polyfill 作为 dependencies 而不是 devDependencies<br>babel-polyfill 主要有两个缺点：</p>
-<ul>
-<li>使用 babel-polyfill 会导致打出来的包非常大，因为 babel-polyfill 是一个整体，把所有方法都加到原型链上。比如我们只使用了 Array.from，但它把 Object.defineProperty 也给加上了，这就是一种浪费了。这个问题可以通过单独使用 core-js 的某个类库来解决，core-js 都是分开的。</li>
-<li>babel-polyfill 会污染全局变量，给很多类的原型链上都作了修改，如果我们开发的也是一个类库供其他开发者使用，这种情况就会变得非常不可控。</li>
-</ul>
-<p>因此在实际使用中，如果我们无法忍受这两个缺点(尤其是第二个)，通常我们会倾向于使用 babel-plugin-transform-runtime。<br>但如果代码中包含高版本 js 中类型的实例方法 (例如 [1,2,3].includes(1))，这还是要使用 polyfill。</p>
-<h3 id="babel-runtime-和-babel-plugin-transform-runtime"><a href="#babel-runtime-和-babel-plugin-transform-runtime" class="headerlink" title="babel-runtime 和 babel-plugin-transform-runtime"></a>babel-runtime 和 babel-plugin-transform-runtime</h3><p>我们时常在项目中看到 .babelrc 中使用 babel-plugin-transform-runtime，而 package.json 中的 dependencies (注意不是 devDependencies) 又包含了 babel-runtime，那这两个是不是成套使用的呢？他们又起什么作用呢？</p>
-<p>先说 babel-plugin-transform-runtime。</p>
-<p>babel 会转换 js 语法，之前已经提过了。以 async/await 举例，如果不使用这个 plugin (即默认情况)，转换后的代码大概是：<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// babel 添加一个方法，把 async 转化为 generator</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">_asyncToGenerator</span>(<span class="params">fn</span>) </span>&#123; <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;....&#125;&#125; <span class="comment">// 很长很长一段</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 具体使用处</span></span><br><span class="line"><span class="keyword">var</span> _ref = _asyncToGenerator(<span class="function"><span class="keyword">function</span>* (<span class="params">arg1, arg2</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">yield</span> (<span class="number">0</span>, something)(arg1, arg2);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
-<p>这个 _asyncToGenerator 在当前文件被定义，然后被使用了，以替换源代码的 await。但每个被转化的文件都会插入一段 _asyncToGenerator 这就导致重复和浪费了。</p>
-<p>在使用了 babel-plugin-transform-runtime 了之后，转化后的代码会变成<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 从直接定义改为引用，这样就不会重复定义了。</span></span><br><span class="line"><span class="keyword">var</span> _asyncToGenerator2 = <span class="built_in">require</span>(<span class="string">'babel-runtime/helpers/asyncToGenerator'</span>);</span><br><span class="line"><span class="keyword">var</span> _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 具体使用处是一样的</span></span><br><span class="line"><span class="keyword">var</span> _ref = _asyncToGenerator3(<span class="function"><span class="keyword">function</span>* (<span class="params">arg1, arg2</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">yield</span> (<span class="number">0</span>, something)(arg1, arg2);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
-<p>从定义方法改成引用，那重复定义就变成了重复引用，就不存在代码重复的问题了。</p>
-<p>但在这里，我们也发现 babel-runtime 出场了，它就是这些方法的集合处，也因此，在使用 babel-plugin-transform-runtime 的时候必须把 babel-runtime 当做依赖。</p>
-<p>再说 babel-runtime，它内部集成了</p>
-<ul>
-<li>core-js: 转换一些内置类 (Promise, Symbols等等) 和静态方法 (Array.from 等)。绝大部分转换是这里做的。自动引入。</li>
-<li>regenerator: 作为 core-js 的拾遗补漏，主要是 generator/yield 和 async/await 两组的支持。当代码中有使用 generators/async 时自动引入。</li>
-<li>helpers, 如上面的 asyncToGenerator 就是其中之一，其他还有如 jsx, classCallCheck 等等，可以查看 babel-helpers。在代码中有内置的 helpers 使用时(如上面的第一段代码)移除定义，并插入引用(于是就变成了第二段代码)。<br>babel-plugin-transform-runtime 不支持 实例方法 (例如 [1,2,3].includes(1))</li>
-</ul>
-<h3 id="Babel-7-x"><a href="#Babel-7-x" class="headerlink" title="Babel 7.x"></a>Babel 7.x</h3><h4 id="preset-的变更：淘汰-es201x，删除-stage-x，强推-env-重点"><a href="#preset-的变更：淘汰-es201x，删除-stage-x，强推-env-重点" class="headerlink" title="preset 的变更：淘汰 es201x，删除 stage-x，强推 env (重点)"></a>preset 的变更：淘汰 es201x，删除 stage-x，强推 env (重点)</h4><p>淘汰 es201x 的目的是把选择环境的工作交给 env 自动进行，而不需要开发者投入精力。凡是使用 es201x 的开发者，都应当使用 env 进行替换。但这里的淘汰 (原文 deprecated) 并不是删除，只是不推荐使用了，不好说 babel 8 就真的删了。</p>
-<p>与之相比，stage-x 就没那么好运了，它们直接被删了。这是因为 babel 团队认为为这些 “不稳定的草案” 花费精力去更新 preset 相当浪费。stage-x 虽然删除了，但它包含的插件并没有删除(只是被更名了，可以看下面一节)，我们依然可以显式地声明这些插件来获得等价的效果。完整列表</p>
-<p>为了减少开发者替换配置文件的机械工作，babel 开发了一款 babel-upgrade 的工具，它会检测 babel 配置中的 stage-x 并且替换成对应的 plugins。除此之外它还有其他功能，我们一会儿再详细看。(总之目的就是让你更加平滑地迁移到 babel 7)</p>
-<h4 id="npm-package-名称的变化"><a href="#npm-package-名称的变化" class="headerlink" title="npm package 名称的变化"></a>npm package 名称的变化</h4><p>这是 babel 7 的一个重大变化，把所有 babel-<em> 重命名为 @babel/</em>，例如：</p>
-<p>babel-cli 变成了 @babel/cli。<br>babel-preset-env 变成了 @babel/preset-env。进一步，还可以省略 preset 而简写为 @babel/env。<br>babel-plugin-transform-arrow-functions 变成了 @babel/plugin-transform-arrow-functions。和 preset 一样，plugin 也可以省略，于是简写为 @babel/transform-arrow-functions。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/25/git操作记录/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="弥生的狗子">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="弥生">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/08/25/git操作记录/" itemprop="url">git操作记录</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-08-25T09:19:38+08:00">
-                2018-08-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/工具方法/" itemprop="url" rel="index">
-                    <span itemprop="name">工具方法</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>git作为最常用的版本控制工具，重要性不言而喻。平时使用的时候有些命令并没有非常理解使用场景，此文用来记录git的操作和其使用场景，以及git的一些概念。</p>
-<h2 id="会生成版本的操作"><a href="#会生成版本的操作" class="headerlink" title="会生成版本的操作"></a>会生成版本的操作</h2><p>1、commit<br>2、非fast forward模式的分支合并<br>注：fast forward模式：比如从master上拉出一个dev分支，dev分支进行了多次commit，而后将dev分支合并到，在dev分支合并到master之前master分支没有任何提交，这个情况下，git会采用fast forward模式进行merge。采用这种模式，如果将dev分支删除之后不会分支的信息将会丢失。当然我们可以使用–no-ff 强制禁止使用fast forward模式。</p>
-<h2 id="提交类操作"><a href="#提交类操作" class="headerlink" title="提交类操作"></a>提交类操作</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git add &lt;file&gt;/.   // 将本地变更提交到暂存区(stage)</span><br><span class="line">git commit -m &quot;&lt;message&gt;&quot;   // 将暂存区(stage)内容一次性提交到本地仓库中，生成一次新的提交</span><br><span class="line">git push &lt;branch&gt;  // 将本地仓库的修改提交到远端仓库</span><br></pre></td></tr></table></figure>
-<h2 id="暂存类操作"><a href="#暂存类操作" class="headerlink" title="暂存类操作"></a>暂存类操作</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git stash  // 将工作区改动临时存储起来</span><br><span class="line">git stash list // 查看临时存储的信息</span><br><span class="line">git stash apply // 将最近一次放入临时存储区域的改动取出，临时存储区域该次存储不删除</span><br><span class="line">git stash drop &lt;version&gt;  // 删除某次存入存储区域的改动</span><br><span class="line">git stash pop  //  将最近一次放入临时存储区域的改动取出，临时存储区域该次存储会被删除</span><br></pre></td></tr></table></figure>
-<h2 id="关联操作"><a href="#关联操作" class="headerlink" title="关联操作"></a>关联操作</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push --set-upstream origin bug  // 本地新建分支，远端没有该分支，这样push可以在远端新建对应跟踪分支</span><br></pre></td></tr></table></figure>
-<h2 id="查询操作"><a href="#查询操作" class="headerlink" title="查询操作"></a>查询操作</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git log --pretty=oneline  // 查看当前分支所有版本信息</span><br><span class="line">git reflog  // 查看每一次git操作，包括 commit checkout reset merge</span><br><span class="line">git status  // 查看当前分支的状态</span><br><span class="line">git remote -v  // 查看远程分支的信息，包括fetch和push地址</span><br></pre></td></tr></table></figure>
-<h2 id="撤销回退操作"><a href="#撤销回退操作" class="headerlink" title="撤销回退操作"></a>撤销回退操作</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git reset --hard HEAD/version // 当前分支回退到对应版本，HEAD^表示上一版本，HEAD^^, HEAD~100,一次类推</span><br><span class="line">git checkout -- &lt;file&gt;/*  // 撤销未提交到暂存区(stage)的工作区内容的改动</span><br><span class="line">git reset HEAD &lt;file&gt;/*   // 将暂存区(stage)的内容回送回到工作区(unstage),然后可以使用git checkout -- &lt;file&gt;/* 撤销此次的内容改动</span><br></pre></td></tr></table></figure>
-<h2 id="切换操作"><a href="#切换操作" class="headerlink" title="切换操作"></a>切换操作</h2><p>git checkout <branch>  // 切换分支<br>git checkout -b <branch> // 新建分支并切换到新建的分支</branch></branch></p>
-<h2 id="新建操作"><a href="#新建操作" class="headerlink" title="新建操作"></a>新建操作</h2><p>git branch <branch> // 新建分支</branch></p>
-<h2 id="删除操作"><a href="#删除操作" class="headerlink" title="删除操作"></a>删除操作</h2><p>git branch -d <branch>  // 删除分支<br>git branch -D <branch>  // 强制删除</branch></branch></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1887,7 +1843,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1898,7 +1854,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">11</span>
                   <span class="site-state-item-name">categories</span>
                 </a>
               </div>
