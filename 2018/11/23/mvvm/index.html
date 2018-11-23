@@ -79,17 +79,17 @@
 
 
 
-<meta name="description" content="本文实现一个简单的mvvm，实现数据的绑定和双向绑定 完整代码 整体思路流程图如下所示：![image][https://github.com/shangraochq/my-vue-mvvm/mvvm.png]思路：  实现一个observer：通过Object.defineProperty对data的属性进行劫持，从而监听数据的变化。当数据发生变化时，通知dep； 实现一个c">
+<meta name="description" content="本文实现一个简单的mvvm，实现数据的绑定和双向绑定 完整代码 整体思路流程图如下所示：![image][https://shangraochq.github.io/my-vue-mvvm/mvvm.png]思路：  实现一个observer：通过Object.defineProperty对data的属性进行劫持，从而监听数据的变化。当数据发生变化时，通知dep； 实现一个co">
 <meta property="og:type" content="article">
 <meta property="og:title" content="实现一个 mvvm">
 <meta property="og:url" content="http://yoursite.com/2018/11/23/mvvm/index.html">
 <meta property="og:site_name" content="弥生">
-<meta property="og:description" content="本文实现一个简单的mvvm，实现数据的绑定和双向绑定 完整代码 整体思路流程图如下所示：![image][https://github.com/shangraochq/my-vue-mvvm/mvvm.png]思路：  实现一个observer：通过Object.defineProperty对data的属性进行劫持，从而监听数据的变化。当数据发生变化时，通知dep； 实现一个c">
+<meta property="og:description" content="本文实现一个简单的mvvm，实现数据的绑定和双向绑定 完整代码 整体思路流程图如下所示：![image][https://shangraochq.github.io/my-vue-mvvm/mvvm.png]思路：  实现一个observer：通过Object.defineProperty对data的属性进行劫持，从而监听数据的变化。当数据发生变化时，通知dep； 实现一个co">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-11-23T07:24:16.814Z">
+<meta property="og:updated_time" content="2018-11-23T07:26:16.937Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="实现一个 mvvm">
-<meta name="twitter:description" content="本文实现一个简单的mvvm，实现数据的绑定和双向绑定 完整代码 整体思路流程图如下所示：![image][https://github.com/shangraochq/my-vue-mvvm/mvvm.png]思路：  实现一个observer：通过Object.defineProperty对data的属性进行劫持，从而监听数据的变化。当数据发生变化时，通知dep； 实现一个c">
+<meta name="twitter:description" content="本文实现一个简单的mvvm，实现数据的绑定和双向绑定 完整代码 整体思路流程图如下所示：![image][https://shangraochq.github.io/my-vue-mvvm/mvvm.png]思路：  实现一个observer：通过Object.defineProperty对data的属性进行劫持，从而监听数据的变化。当数据发生变化时，通知dep； 实现一个co">
 
 
 
@@ -332,7 +332,7 @@
 
       
         <p>本文实现一个简单的mvvm，实现数据的绑定和双向绑定 <a href="https://github.com/shangraochq/my-vue-mvvm" target="_blank" rel="noopener">完整代码</a></p>
-<h2 id="整体思路"><a href="#整体思路" class="headerlink" title="整体思路"></a>整体思路</h2><p>流程图如下所示：<br>![image][<a href="https://github.com/shangraochq/my-vue-mvvm/mvvm.png]" target="_blank" rel="noopener">https://github.com/shangraochq/my-vue-mvvm/mvvm.png]</a><br><br>思路：</p>
+<h2 id="整体思路"><a href="#整体思路" class="headerlink" title="整体思路"></a>整体思路</h2><p>流程图如下所示：<br>![image][<a href="https://shangraochq.github.io/my-vue-mvvm/mvvm.png]" target="_blank" rel="noopener">https://shangraochq.github.io/my-vue-mvvm/mvvm.png]</a><br><br>思路：</p>
 <ul>
 <li>实现一个observer：通过Object.defineProperty对data的属性进行劫持，从而监听数据的变化。当数据发生变化时，通知dep；</li>
 <li>实现一个compile：对元素节点进行遍历，取出节点中的指令和事件，以及文本节点中的插值。根据指令和插值完成初始化渲染，将对应的数据渲染到对应节点中，同时为元素绑定事件。此外，将对应节点的更新函数绑定到watcher中；</li>
