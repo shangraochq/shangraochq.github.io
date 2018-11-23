@@ -239,6 +239,159 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/23/mvvm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弥生的狗子">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="弥生">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/11/23/mvvm/" itemprop="url">实现一个 mvvm</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-11-23T15:21:34+08:00">
+                2018-11-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/框架及技术/" itemprop="url" rel="index">
+                    <span itemprop="name">框架及技术</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>本文实现一个简单的mvvm，实现数据的绑定和双向绑定 <a href="https://github.com/shangraochq/my-vue-mvvm" target="_blank" rel="noopener">完整代码</a></p>
+<h2 id="整体思路"><a href="#整体思路" class="headerlink" title="整体思路"></a>整体思路</h2><p>流程图如下所示：<br>![image][<a href="https://github.com/shangraochq/my-vue-mvvm/mvvm.png]" target="_blank" rel="noopener">https://github.com/shangraochq/my-vue-mvvm/mvvm.png]</a><br><br>思路：</p>
+<ul>
+<li>实现一个observer：通过Object.defineProperty对data的属性进行劫持，从而监听数据的变化。当数据发生变化时，通知dep；</li>
+<li>实现一个compile：对元素节点进行遍历，取出节点中的指令和事件，以及文本节点中的插值。根据指令和插值完成初始化渲染，将对应的数据渲染到对应节点中，同时为元素绑定事件。此外，将对应节点的更新函数绑定到watcher中；</li>
+<li>实现一个watcher：在Watcher的构造函数中触发对应绑定的响应值的getter函数，将该watcher加入到对应的dep当中。当dep通知watcher数据发生变化时，触发传入的更新函数，更新视图；</li>
+<li>实现一个dep：当接到observer通知，有数据发生改变时，通知在sub中注册的watcher。</li>
+</ul>
+<h3 id="Observer"><a href="#Observer" class="headerlink" title="Observer"></a>Observer</h3><p>遍历data对象，为所有属性和子属性添加get和set。<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Dep <span class="keyword">from</span> <span class="string">'./dep'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">Observer</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>(data) &#123;</span><br><span class="line">        <span class="keyword">this</span>.data = data;</span><br><span class="line">        <span class="keyword">this</span>.convert(<span class="keyword">this</span>.data);</span><br><span class="line">    &#125;</span><br><span class="line">    convert(data) &#123;</span><br><span class="line">        <span class="built_in">Object</span>.keys(data).forEach(<span class="function"><span class="params">key</span> =&gt;</span> &#123;</span><br><span class="line">            <span class="keyword">this</span>.defineReactive(data, key, data[key]);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    defineReactive(data, key, value) &#123;</span><br><span class="line">        <span class="keyword">const</span> dep = <span class="keyword">new</span> Dep();</span><br><span class="line">        <span class="comment">// 如果value是对象，监听它的属性</span></span><br><span class="line">        observer(value);</span><br><span class="line">        <span class="built_in">Object</span>.defineProperty(data, key, &#123;</span><br><span class="line">            enumerable: <span class="literal">true</span>,</span><br><span class="line">            configurable: <span class="literal">true</span>,</span><br><span class="line">            get() &#123;</span><br><span class="line">                <span class="keyword">if</span> (Dep.target) &#123;</span><br><span class="line">                    <span class="comment">// 将对应的watcher加入到dep里面</span></span><br><span class="line">                    dep.addSub(Dep.target);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">return</span> value;</span><br><span class="line">            &#125;,</span><br><span class="line">            set(newValue) &#123;</span><br><span class="line">                <span class="keyword">if</span> (value === newValue) &#123;</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                value = newValue;</span><br><span class="line">                <span class="comment">// 新值时obj,监听它的属性</span></span><br><span class="line">                observer(newValue);</span><br><span class="line">                <span class="comment">// 属性发生变化，通知watcher调用更新函数更新</span></span><br><span class="line">                dep.notify();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">observer</span>(<span class="params">data</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!data || <span class="keyword">typeof</span> data !== <span class="string">'object'</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">new</span> Observer(data);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="Compile"><a href="#Compile" class="headerlink" title="Compile"></a>Compile</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Watcher <span class="keyword">from</span> <span class="string">'./watcher.js'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123;isElementNode, isTextNode, setInnerText, getInnerText &#125; <span class="keyword">from</span> <span class="string">"./utils/dom.js"</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; getValOfObj, setValOfObj &#125; <span class="keyword">from</span> <span class="string">"./utils/tool.js"</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; isDirective, isEventDirective &#125; <span class="keyword">from</span> <span class="string">"./utils/directive.js"</span>;</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">Compile</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>(el, vm) &#123;</span><br><span class="line">        <span class="keyword">this</span>.$vm = vm;</span><br><span class="line">        <span class="keyword">this</span>.$el = isElementNode(el) ? el : <span class="built_in">document</span>.getElementById(el);</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.$el) &#123;</span><br><span class="line">            <span class="comment">// 将节点插入到文文档碎片中</span></span><br><span class="line">            <span class="keyword">this</span>.$fragment = <span class="keyword">this</span>.nodeToFragment();</span><br><span class="line">            <span class="comment">// 处理节点的指令和插值</span></span><br><span class="line">            <span class="keyword">this</span>.compileElement(<span class="keyword">this</span>.$fragment);</span><br><span class="line">            <span class="comment">// 将文档碎片重新插入文档中</span></span><br><span class="line">            <span class="keyword">this</span>.$el.appendChild(<span class="keyword">this</span>.$fragment);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    nodeToFragment() &#123;</span><br><span class="line">        <span class="keyword">let</span> fragment = <span class="built_in">document</span>.createDocumentFragment();</span><br><span class="line">        <span class="keyword">let</span> child = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">for</span> (; <span class="literal">true</span>;) &#123;</span><br><span class="line">            child = <span class="keyword">this</span>.$el.firstChild;</span><br><span class="line">            <span class="keyword">if</span> (child) &#123;</span><br><span class="line">                fragment.appendChild(child);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> fragment;</span><br><span class="line">    &#125;</span><br><span class="line">    compileElement(node) &#123;</span><br><span class="line">        <span class="keyword">const</span> childNodes = node.childNodes;</span><br><span class="line">        <span class="keyword">const</span> reg = <span class="regexp">/\&#123;\&#123;(.*)\&#125;\&#125;/</span>;</span><br><span class="line">        childNodes.forEach(<span class="function"><span class="params">node</span> =&gt;</span> &#123;</span><br><span class="line">            <span class="keyword">const</span> text = getInnerText(node);</span><br><span class="line">            <span class="keyword">if</span> (isElementNode(node)) &#123;</span><br><span class="line">                <span class="comment">// 处理指令</span></span><br><span class="line">                <span class="keyword">this</span>.compile(node);</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (isTextNode(node) &amp;&amp; reg.test(text)) &#123;</span><br><span class="line">                <span class="comment">// 处理插值</span></span><br><span class="line">                <span class="keyword">this</span>.compileText(node, <span class="built_in">RegExp</span>.$<span class="number">1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// node如果还存在子节点，继续compile其子节点</span></span><br><span class="line">            <span class="keyword">if</span> (node.childNodes &amp;&amp; node.childNodes.length) &#123;</span><br><span class="line">                <span class="keyword">this</span>.compileElement(node);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    compile(node) &#123;</span><br><span class="line">        <span class="keyword">const</span> nodeAttrs = node.attributes;</span><br><span class="line">        <span class="comment">// Array.prototype.forEach.call(this) 写法可以让没有forEach的类数组对象使用forEach方法，</span></span><br><span class="line">        <span class="comment">// 类数组指的是拥有length属性，和一些数字属性的对象</span></span><br><span class="line">        <span class="built_in">Array</span>.prototype.forEach.call(nodeAttrs, (attr) =&gt; &#123;</span><br><span class="line">            <span class="keyword">const</span> attrName = attr.name;</span><br><span class="line">            <span class="keyword">if</span> (isDirective(attrName)) &#123;</span><br><span class="line">                <span class="keyword">const</span> dirValue = attr.value;</span><br><span class="line">                <span class="keyword">const</span> dir = attrName.substring(<span class="number">2</span>);</span><br><span class="line">                <span class="comment">// 事件指令</span></span><br><span class="line">                <span class="keyword">if</span> (isEventDirective(attrName)) &#123;</span><br><span class="line">                    compileUtils.eventHandler(node, dir, dirValue, <span class="keyword">this</span>.$vm);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    compileUtils[dir] &amp;&amp; compileUtils[dir](node, dirValue, <span class="keyword">this</span>.$vm);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 编译插值</span></span><br><span class="line"><span class="comment">     * @param &#123;Element&#125; node</span></span><br><span class="line"><span class="comment">     * @param &#123;string&#125; responseKey 插值</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    compileText(node, responseKey) &#123;</span><br><span class="line">        compileUtils.text(node, responseKey, <span class="keyword">this</span>.$vm);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">compile</span>(<span class="params">el, vm</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">new</span> Compile(el, vm);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 指令或插值的集合</span></span><br><span class="line"><span class="keyword">const</span> compileUtils = &#123;</span><br><span class="line">    text: <span class="function">(<span class="params">node, responseKey, vm</span>) =&gt;</span> &#123;</span><br><span class="line">        compileUtils.bind(node, responseKey, vm, <span class="string">'text'</span>);</span><br><span class="line">    &#125;,</span><br><span class="line">    model: <span class="function">(<span class="params">node, responseKey, vm</span>) =&gt;</span> &#123;</span><br><span class="line">        compileUtils.bind(node, responseKey, vm, <span class="string">'model'</span>);</span><br><span class="line">        <span class="comment">// 实现view -&gt; data的响应</span></span><br><span class="line">        node.addEventListener(<span class="string">'input'</span>, (e) =&gt; &#123;</span><br><span class="line">            <span class="keyword">const</span> newValue = e.target.value;</span><br><span class="line">            <span class="keyword">if</span> (newValue === getValOfObj(vm, responseKey)) &#123;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            setValOfObj(vm, responseKey, newValue);</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;,</span><br><span class="line">    class: (node, responseKey, vm) =&gt; &#123;</span><br><span class="line">        compileUtils.bind(node, responseKey, vm, <span class="string">'text'</span>);</span><br><span class="line">    &#125;,</span><br><span class="line">    bind: <span class="function">(<span class="params">node, responseKey, vm, directive</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">const</span> updaterFn = updater[directive + <span class="string">'Updater'</span>];</span><br><span class="line">        <span class="comment">// 初始化视图</span></span><br><span class="line">        updaterFn &amp;&amp; updaterFn(node, getValOfObj(vm, responseKey));</span><br><span class="line">        <span class="comment">// 绑定更新函数到watcher</span></span><br><span class="line">        <span class="keyword">new</span> Watcher(vm, responseKey, (newValue, oldValue) =&gt; &#123;</span><br><span class="line">            updaterFn &amp;&amp; updaterFn(node, newValue, oldValue);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;,</span><br><span class="line">    eventHandler: <span class="function">(<span class="params">node, dir, dirValue, vm</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">const</span> eventType = dir.split(<span class="string">':'</span>)[<span class="number">1</span>];</span><br><span class="line">        <span class="keyword">const</span> fn = vm.$options.methods &amp;&amp; vm.$options.methods[dirValue];</span><br><span class="line">        <span class="keyword">if</span> (eventType &amp;&amp; fn) &#123;</span><br><span class="line">            node.addEventListener(eventType, fn.bind(vm), <span class="literal">false</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 更新函数集合</span></span><br><span class="line"><span class="keyword">const</span> updater = &#123;</span><br><span class="line">    textUpdater: <span class="function">(<span class="params">node, value</span>) =&gt;</span> &#123;</span><br><span class="line">        setInnerText(node, value);</span><br><span class="line">    &#125;,</span><br><span class="line">    modelUpdater: <span class="function">(<span class="params">node, value</span>) =&gt;</span> &#123;</span><br><span class="line">        node.value = <span class="keyword">typeof</span> value == <span class="string">'undefined'</span> ? <span class="string">''</span> : value;</span><br><span class="line">    &#125;,</span><br><span class="line">    classUpdater: <span class="function">(<span class="params">node, value, oldValue</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> className = node.className;</span><br><span class="line">        className = className.replace(oldValue, <span class="string">''</span>).replace(<span class="regexp">/\s$/</span>, <span class="string">''</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">const</span> space = className &amp;&amp; <span class="built_in">String</span>(value) ? <span class="string">' '</span> : <span class="string">''</span>;</span><br><span class="line"></span><br><span class="line">        node.className = className + space + value;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Watcher"><a href="#Watcher" class="headerlink" title="Watcher"></a>Watcher</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Dep <span class="keyword">from</span> <span class="string">"./dep.js"</span>;</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">Watcher</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>(vm, responseKey, callback) &#123;</span><br><span class="line">        <span class="keyword">this</span>.vm = vm;</span><br><span class="line">        <span class="keyword">this</span>.callback = callback;</span><br><span class="line">        <span class="keyword">this</span>.responseKey = responseKey;</span><br><span class="line">        <span class="keyword">this</span>.value = <span class="keyword">this</span>.get();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 出个被监听data属性的getter方法，将watcher加入到dep中；</span></span><br><span class="line">    get() &#123;</span><br><span class="line">        Dep.target = <span class="keyword">this</span>;</span><br><span class="line">        <span class="keyword">const</span> value = <span class="keyword">this</span>.getter();</span><br><span class="line">        Dep.target = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">return</span> value;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 获取responseKey对应的值,过程中触发该属性的getter方法</span></span><br><span class="line">    getter() &#123;</span><br><span class="line">        <span class="keyword">let</span> value = <span class="keyword">this</span>.vm;</span><br><span class="line">        <span class="keyword">const</span> keyArray = <span class="keyword">this</span>.responseKey.split(<span class="string">'.'</span>);</span><br><span class="line">        keyArray.forEach(<span class="function"><span class="params">key</span> =&gt;</span> &#123;</span><br><span class="line">            value = value[key];</span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="keyword">return</span> value;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// dep通知watcher更新，更新函数</span></span><br><span class="line">    update() &#123;</span><br><span class="line">        <span class="keyword">const</span> oldValue = <span class="keyword">this</span>.value;</span><br><span class="line">        <span class="keyword">this</span>.value = <span class="keyword">this</span>.getter();</span><br><span class="line">        <span class="keyword">if</span> (oldValue !== <span class="keyword">this</span>.value) &#123;</span><br><span class="line">            <span class="keyword">this</span>.callback.call(<span class="keyword">this</span>.vm, <span class="keyword">this</span>.value, oldValue);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Dep"><a href="#Dep" class="headerlink" title="Dep"></a>Dep</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">Dep</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>() &#123;</span><br><span class="line">        <span class="keyword">this</span>.subs = [];</span><br><span class="line">    &#125;</span><br><span class="line">    addSub(sub) &#123;</span><br><span class="line">        <span class="keyword">this</span>.subs.push(sub);</span><br><span class="line">    &#125;</span><br><span class="line">    notify() &#123;</span><br><span class="line">        <span class="keyword">this</span>.subs.forEach(<span class="function"><span class="params">sub</span> =&gt;</span> &#123;</span><br><span class="line">            sub.update();</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">Dep.target = <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/19/webpack/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1576,223 +1729,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/08/Flex/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="弥生的狗子">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="弥生">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/09/08/Flex/" itemprop="url">Flex</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-09-08T13:44:18+08:00">
-                2018-09-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/CSS3/" itemprop="url" rel="index">
-                    <span itemprop="name">CSS3</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Flex优势"><a href="#Flex优势" class="headerlink" title="Flex优势"></a>Flex优势</h3><p>Flex十分简单灵活，区区简单几行代码就可以实现各种页面的的布局。</p>
-<h3 id="声明Flex容器"><a href="#声明Flex容器" class="headerlink" title="声明Flex容器"></a>声明Flex容器</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">display: flex  // 声明为块状Flex容器</span><br><span class="line">display: inline-flex // 声明为内联Flex容器</span><br></pre></td></tr></table></figure>
-<p>注意： 注意，设为 Flex 布局以后，子元素的float、clear和vertical-align属性将失效。</p>
-<h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p>采用 Flex 布局的元素，称为 Flex 容器（flex container），简称”容器”。它的所有子元素（只包括子元素，不包括孙元素等）自动成为容器成员，称为 Flex 项目（flex item），简称”项目”。<br>容器默认存在两根轴：水平的主轴（main axis）和垂直的交叉轴（cross axis）。主轴的开始位置（与边框的交叉点）叫做main start，结束位置叫做main end；交叉轴的开始位置叫做cross start，结束位置叫做cross end。</p>
-<p>项目默认沿主轴排列。单个项目占据的主轴空间叫做main size，占据的交叉轴空间叫做cross size。</p>
-<h3 id="容器的属性"><a href="#容器的属性" class="headerlink" title="容器的属性"></a>容器的属性</h3><ul>
-<li>flex-direction</li>
-<li>flex-wrap</li>
-<li>flex-flow</li>
-<li>justify-content</li>
-<li>align-items</li>
-<li>align-content</li>
-</ul>
-<h4 id="flex-direction"><a href="#flex-direction" class="headerlink" title="flex-direction"></a>flex-direction</h4><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.box</span> &#123;</span><br><span class="line">  <span class="attribute">flex-direction</span>: row | row-reverse | column | column-reverse;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>row（默认值）：主轴为水平方向，起点在左端。</li>
-<li>row-reverse：主轴为水平方向，起点在右端。</li>
-<li>column：主轴为垂直方向，起点在上沿。</li>
-<li>column-reverse：主轴为垂直方向，起点在下沿。</li>
-</ul>
-<h4 id="flex-wrap"><a href="#flex-wrap" class="headerlink" title="flex-wrap"></a>flex-wrap</h4><p>默认情况下，项目都排在一条线（又称”轴线”）上。flex-wrap属性定义，如果一条轴线排不下，如何换行。<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.box</span>&#123;</span><br><span class="line">  <span class="attribute">flex-wrap</span>: nowrap | wrap | wrap-reverse;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li>nowrap(默认值): 不换行，通过缩短item宽度排版</li>
-<li>wrap：换行，第一行在上方</li>
-<li>wrap-reverse：换行，第一行在下方</li>
-</ul>
-<h4 id="flex-flow"><a href="#flex-flow" class="headerlink" title="flex-flow"></a>flex-flow</h4><p>flex-flow属性是flex-direction属性和flex-wrap属性的简写形式，默认值为row nowrap。(感觉用处不大，这个属性)<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.box</span> &#123;</span><br><span class="line">  <span class="attribute">flex-flow</span>: &lt;flex-direction&gt; || &lt;flex-wrap&gt;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h4 id="justify-content"><a href="#justify-content" class="headerlink" title="justify-content"></a>justify-content</h4><p>justify-content属性定义了项目在主轴上的对齐方式。<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.box</span> &#123;</span><br><span class="line">  <span class="attribute">justify-content</span>: flex-start | flex-end | center | space-between | space-around;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li>flex-start（默认值）：左对齐</li>
-<li>flex-end：右对齐</li>
-<li>center： 居中</li>
-<li>space-between：两端对齐，项目之间的间隔都相等。</li>
-<li>space-around：每个项目两侧的间隔相等。所以，项目之间的间隔比项目与边框的间隔大一倍。</li>
-</ul>
-<h4 id="align-items"><a href="#align-items" class="headerlink" title="align-items"></a>align-items</h4><p>align-items属性定义项目在交叉轴上如何对齐。<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.box</span> &#123;</span><br><span class="line">  <span class="attribute">align-items</span>: flex-start | flex-end | center | baseline | stretch;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li>stretch（默认值）：如果项目未设置高度或设为auto，将占满整个容器的高度。</li>
-<li>flex-start：交叉轴的起点对齐。</li>
-<li>flex-end：交叉轴的终点对齐。</li>
-<li>center：交叉轴的中点对齐。</li>
-<li>baseline: 项目的第一行文字的基线对齐（文字底部对齐）</li>
-</ul>
-<h4 id="align-content"><a href="#align-content" class="headerlink" title="align-content"></a>align-content</h4><p>align-content属性定义了多根主轴线的对齐方式。如果项目只有一根主轴线，该属性不起作用。<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.box</span> &#123;</span><br><span class="line">  <span class="attribute">align-content</span>: flex-start | flex-end | center | space-between | space-around | stretch;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li>stretch（默认值）：轴线占满整个交叉轴。</li>
-<li>flex-start：与交叉轴的起点对齐。</li>
-<li>flex-end：与交叉轴的终点对齐。</li>
-<li>center：与交叉轴的中点对齐。</li>
-<li>space-between：与交叉轴两端对齐，轴线之间的间隔平均分布。</li>
-<li>space-around：每根轴线两侧的间隔都相等。所以，轴线之间的间隔比轴线与边框的间隔大一倍。</li>
-</ul>
-<h3 id="项目的属性"><a href="#项目的属性" class="headerlink" title="项目的属性"></a>项目的属性</h3><p>包括以下6个：</p>
-<ul>
-<li>order</li>
-<li>flex-grow</li>
-<li>flex-shrink</li>
-<li>flex-basis</li>
-<li>flex</li>
-<li>align-self</li>
-</ul>
-<h4 id="order"><a href="#order" class="headerlink" title="order"></a>order</h4><p>order属性定义项目的排列顺序。数值越小，排列越靠前，默认为0。<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.item</span> &#123;</span><br><span class="line">  <span class="attribute">order</span>: &lt;integer&gt;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h4 id="flex-grow"><a href="#flex-grow" class="headerlink" title="flex-grow"></a>flex-grow</h4><p>flex-grow属性定义项目的放大比例，默认为0，即如果存在剩余空间，也不放大。<br>如果所有项目的flex-grow属性都为1，则它们将等分剩余空间（如果有的话）。如果一个项目的flex-grow属性为2，其他项目都为1，则前者占据的剩余空间将比其他项多一倍。<br>剩余空间：假如容器的宽度为100%，2个项目各占30%的宽度，则剩余40%的空间。<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.item</span> &#123;</span><br><span class="line">  <span class="attribute">flex-grow</span>: &lt;number&gt;; <span class="comment">/* default 0 */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h4 id="flex-shrink"><a href="#flex-shrink" class="headerlink" title="flex-shrink"></a>flex-shrink</h4><p>flex-shrink属性定义了项目的缩小比例，默认为1，即如果空间不足，该项目将缩小。<br>空间不足的场景：容器flex-wrap设置为wrap，所有item的宽度操作了容器宽度。<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.item</span> &#123;</span><br><span class="line">  <span class="attribute">flex-shrink</span>: &lt;number&gt;; <span class="comment">/* default 1 */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>如果所有项目的flex-shrink属性都为1，当空间不足时，都将等比例缩小。如果一个项目的flex-shrink属性为0，其他项目都为1，则空间不足时，前者不缩小。</p>
-<h4 id="flex-basis"><a href="#flex-basis" class="headerlink" title="flex-basis"></a>flex-basis</h4><p>flex-basis属性定义了在分配多余空间之前，项目占据的主轴空间（main size）。浏览器根据这个属性，计算主轴是否有多余空间。它的默认值为auto，即项目的本来大小。<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.item</span> &#123;</span><br><span class="line">  <span class="attribute">flex-basis</span>: &lt;length&gt; | auto; <span class="comment">/* default auto */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>它可以设为跟width或height属性一样的值（比如350px），则项目将占据固定空间</p>
-<h4 id="flex"><a href="#flex" class="headerlink" title="flex"></a>flex</h4><p>flex属性是flex-grow, flex-shrink 和 flex-basis的简写，默认值为0 1 auto。后两个属性可选。<br>该属性有两个快捷值：auto (1 1 auto) 和 none (0 0 auto)。</p>
-<h4 id="align-self"><a href="#align-self" class="headerlink" title="align-self"></a>align-self</h4><p>align-self属性允许单个项目有与其他项目不一样的对齐方式，可覆盖align-items属性。默认值为auto，表示继承父元素的align-items属性，如果没有父元素，则等同于stretch。<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.item</span> &#123;</span><br><span class="line">  <span class="attribute">align-self</span>: auto | flex-start | flex-end | center | baseline | stretch;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="Flex实现常见布局"><a href="#Flex实现常见布局" class="headerlink" title="Flex实现常见布局"></a>Flex实现常见布局</h3><h4 id="网格布局"><a href="#网格布局" class="headerlink" title="网格布局"></a>网格布局</h4><p><img src="http://www.ruanyifeng.com/blogimg/asset/2015/bg2015071321.png" alt=""><br>HTML:<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"Grid"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span>&gt;</span><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span>&gt;</span><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
-<p>css:<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.Grid</span> &#123;</span><br><span class="line">  <span class="attribute">display</span>: flex;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">100px</span>;</span><br><span class="line">  <span class="attribute">margin</span>: <span class="number">10px</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-tag">p</span> &#123;</span><br><span class="line">  <span class="attribute">flex</span>: <span class="number">1</span>;</span><br><span class="line">  <span class="attribute">background</span>: red;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">100px</span>;</span><br><span class="line">  <span class="attribute">margin</span>: <span class="number">10px</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h4 id="百分比布局"><a href="#百分比布局" class="headerlink" title="百分比布局"></a>百分比布局</h4><p>某个网格的宽度为固定的百分比，其余网格平均分配剩余的空间。<br><img src="http://www.ruanyifeng.com/blogimg/asset/2015/bg2015071322.png" alt=""><br>HTML：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"Grid"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"Grid-cell u-1of4"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"Grid-cell"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"Grid-cell u-1of3"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
-<p>CSS:<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.Grid</span> &#123;</span><br><span class="line">  <span class="attribute">display</span>: flex;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.Grid-cell</span> &#123;</span><br><span class="line">  <span class="attribute">flex</span>: <span class="number">1</span>;</span><br><span class="line">  <span class="attribute">background</span>: red;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">100px</span>;</span><br><span class="line">  <span class="attribute">margin</span>: <span class="number">10px</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.Grid-cell</span><span class="selector-class">.u-full</span> &#123;</span><br><span class="line">  <span class="attribute">flex</span>: <span class="number">0</span> <span class="number">0</span> <span class="number">100%</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.Grid-cell</span><span class="selector-class">.u-1of2</span> &#123;</span><br><span class="line">  <span class="attribute">flex</span>: <span class="number">0</span> <span class="number">0</span> <span class="number">50%</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.Grid-cell</span><span class="selector-class">.u-1of3</span> &#123;</span><br><span class="line">  <span class="attribute">flex</span>: <span class="number">0</span> <span class="number">0</span> <span class="number">33.3333%</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.Grid-cell</span><span class="selector-class">.u-1of4</span> &#123;</span><br><span class="line">  <span class="attribute">flex</span>: <span class="number">0</span> <span class="number">0</span> <span class="number">25%</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h4 id="圣杯布局"><a href="#圣杯布局" class="headerlink" title="圣杯布局"></a>圣杯布局</h4><p>圣杯布局（Holy Grail Layout）指的是一种最常见的网站布局。页面从上到下，分成三个部分：头部（header），躯干（body），尾部（footer）。其中躯干又水平分成三栏，从左到右为：导航、主栏、副栏，主栏的元素在导航和副栏之前，保证优先加载<br><img src="http://www.ruanyifeng.com/blogimg/asset/2015/bg2015071323.png" alt=""><br>HTML:<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">section</span> <span class="attr">class</span>=<span class="string">"header"</span>&gt;</span><span class="tag">&lt;/<span class="name">section</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">section</span> <span class="attr">class</span>=<span class="string">"body"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">section</span> <span class="attr">class</span>=<span class="string">"main"</span>&gt;</span><span class="tag">&lt;/<span class="name">section</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">section</span> <span class="attr">class</span>=<span class="string">"right"</span>&gt;</span><span class="tag">&lt;/<span class="name">section</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">section</span> <span class="attr">class</span>=<span class="string">"left"</span>&gt;</span><span class="tag">&lt;/<span class="name">section</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">section</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">section</span> <span class="attr">class</span>=<span class="string">"footer"</span>&gt;</span><span class="tag">&lt;/<span class="name">section</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
-<p>css:<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">html</span> &#123;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">100%</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-tag">body</span> &#123;</span><br><span class="line">  <span class="attribute">display</span>: flex;</span><br><span class="line">  <span class="attribute">flex-wrap</span>: wrap;</span><br><span class="line">  <span class="attribute">flex-direction</span>: column;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">100%</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.header</span> &#123;</span><br><span class="line">  <span class="attribute">background</span>: red;</span><br><span class="line">  <span class="attribute">flex</span>: <span class="number">0</span> <span class="number">0</span> <span class="number">100px</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.body</span> &#123;</span><br><span class="line">  <span class="attribute">background</span>: <span class="number">#ccc</span>;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">4000px</span>;</span><br><span class="line">  <span class="attribute">display</span>: flex;</span><br><span class="line">  <span class="attribute">flex</span>: <span class="number">1</span>;</span><br><span class="line">  <span class="attribute">overflow</span>: auto;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.footer</span> &#123;</span><br><span class="line">  <span class="attribute">background</span>: blue;</span><br><span class="line">  <span class="attribute">flex</span>:<span class="number">0</span> <span class="number">0</span> <span class="number">100px</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.main</span> &#123;</span><br><span class="line">   <span class="attribute">background</span>: green;</span><br><span class="line">   <span class="attribute">flex</span>: <span class="number">1</span>;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">4000px</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.right</span>, <span class="selector-class">.left</span> &#123;</span><br><span class="line">  <span class="attribute">flex</span>: <span class="number">0</span> <span class="number">0</span> <span class="number">20%</span>;</span><br><span class="line">  <span class="attribute">background</span>: black;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.left</span> &#123;</span><br><span class="line">  <span class="attribute">order</span>: -<span class="number">1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p>1、 <a href="https://philipwalton.github.io/solved-by-flexbox/" target="_blank" rel="noopener">Sloved by Flex</a><br>2、 <a href="http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html" target="_blank" rel="noopener">Flex 布局教程：语法篇</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1843,7 +1779,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-count">14</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
