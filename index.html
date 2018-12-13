@@ -239,6 +239,158 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/13/实现一个简单的打包工具/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弥生的狗子">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="弥生">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/12/13/实现一个简单的打包工具/" itemprop="url">实现一个简单的打包工具</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-12-13T16:06:59+08:00">
+                2018-12-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/前端工程化/" itemprop="url" rel="index">
+                    <span itemprop="name">前端工程化</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>这里实现一个简单得打包工具，目的是为了理解webpack等打包工具的基本打包原理</p>
+<p>一个基本的打包工具首先需要的功能是根据文件提取出文件的依赖，其次需要根据入口文件，提取其中的依赖，再遍历依赖，提取依赖中的依赖，从而生成一个依赖树，最终根据依赖树打包出一个能在浏览器中执行的文件，该文件包含所有被引用的依赖。此外，我们需要使用 babel-core 将代码转义成ES5的的代码，但是babel-core 转义出来的是commonjs 的模块，所以打包工具需要实现一套commonjs 的机制，让浏览器能够执行commonjs 的模块。这样一来，整个实现过程就比较清晰，主要要实现这么几个功能：</p>
+<ul>
+<li>根据文件路径提取文件中的依赖，代码等返回一个具有唯一标识的模块对象</li>
+<li>根据入口文件，生成一个依赖树，</li>
+<li>根据依赖树打包文件，并实现一套commonjs 的规范，包括require, module, module.exports。最终生成一个可以在浏览器执行的自执行函数。</li>
+</ul>
+<p>上述上个功能分别通过三个函数实现，分别为createModule、 createDependenceTree、 bundle。具体代码如下，代码细节不做解释，可以查看代码中的注释理解。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="keyword">const</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>);</span><br><span class="line"><span class="keyword">const</span> babylon = <span class="built_in">require</span>(<span class="string">'babylon'</span>);</span><br><span class="line"><span class="keyword">const</span> traverse = <span class="built_in">require</span>(<span class="string">'babel-traverse'</span>).default;</span><br><span class="line"><span class="keyword">const</span> &#123; transformFromAst &#125; = <span class="built_in">require</span>(<span class="string">'babel-core'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> identifier = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 定义一个创建module的方法， 根据传入的path提取文件的依赖， code等</span></span><br><span class="line"><span class="comment"> * @param &#123;string&#125; path 文件路径</span></span><br><span class="line"><span class="comment"> * @return 模块对象</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">createModule</span>(<span class="params">path</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> fileContent = fs.readFileSync(path, <span class="string">'utf-8'</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 使用babylon生成抽象语法树</span></span><br><span class="line">    <span class="keyword">const</span> ast = babylon.parse(fileContent, &#123;</span><br><span class="line">        sourceType: <span class="string">'module'</span>,</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 用于存储模块的依赖</span></span><br><span class="line">    <span class="keyword">const</span> dependencies = [];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 提取文件中的依赖，并存到 dependencies 中</span></span><br><span class="line">    traverse(ast, &#123;</span><br><span class="line">        ImportDeclaration: (&#123;</span><br><span class="line">            node</span><br><span class="line">        &#125;) =&gt; &#123;</span><br><span class="line">            dependencies.push(node.source.value);</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 生成一个唯一的标识符, 用于标识唯一的模块</span></span><br><span class="line">    <span class="keyword">const</span> id = identifier++;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 使用babel-core 将代码转义成es5的代码</span></span><br><span class="line">    <span class="keyword">const</span> &#123; code &#125; = transformFromAst(ast, <span class="literal">null</span>, &#123;</span><br><span class="line">        presets: [<span class="string">'env'</span>],</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 返回一个模块对象，对应这个模块</span></span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        id,</span><br><span class="line">        code,</span><br><span class="line">        dependencies,</span><br><span class="line">        path,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 定义一个生成依赖树的函数， 遍历每一个被依赖的模块， 提取他们各自的依赖</span></span><br><span class="line"><span class="comment"> * @param &#123;string&#125; entry 入口文件</span></span><br><span class="line"><span class="comment"> * @return 依赖树</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">createDependenceTree</span>(<span class="params">entry</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 生成入口模块</span></span><br><span class="line">    <span class="keyword">const</span> entryModule = createModule(entry);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定义一个数组作为依赖树的容器，存储模块</span></span><br><span class="line">    <span class="keyword">const</span> moduleList = [entryModule];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 遍历依赖树，生成完整依赖树</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">const</span> <span class="built_in">module</span> <span class="keyword">of</span> moduleList) &#123;</span><br><span class="line">        <span class="built_in">module</span>.dependenceMapping = &#123;&#125;;</span><br><span class="line">        <span class="comment">// 获取模块所在的文件夹路径</span></span><br><span class="line">        <span class="keyword">const</span> dirname = path.dirname(<span class="built_in">module</span>.path);</span><br><span class="line"></span><br><span class="line">        <span class="built_in">module</span>.dependencies.forEach(<span class="function"><span class="params">dependencePath</span> =&gt;</span> &#123;</span><br><span class="line">            <span class="comment">// 生成依赖的绝对路径</span></span><br><span class="line">            <span class="keyword">const</span> absolutePath = path.join(dirname, dependencePath);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">const</span> dependenceModule = createModule(absolutePath);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 将模块的依赖的路径和对应的依赖id对应起来，之后加载依赖模块时，找对应id的模块即可</span></span><br><span class="line">            <span class="built_in">module</span>.dependenceMapping[dependencePath] = dependenceModule.id;</span><br><span class="line">            moduleList.push(dependenceModule);</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> moduleList;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 根据依赖树将模块打包，返回一个自执行的函数</span></span><br><span class="line"><span class="comment"> * @param &#123;any[]&#125; dependenceTree 依赖树</span></span><br><span class="line"><span class="comment"> * @return &#123;string&#125; 打包出来的自执行函数，可在浏览器执行</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">bundle</span>(<span class="params">dependenceTree</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> modules = <span class="string">''</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 遍历依赖树生成一个依赖树对象， key =&gt; value类型， key为模块的id， value为一个数组</span></span><br><span class="line"><span class="comment">     * 数组的第一项为一个函数， 传入require, module, exports三个参数， 因为babel转义</span></span><br><span class="line"><span class="comment">     * 出来的模块是CommonJs的， 所以需要给模块提供这个三个参数， 这个需要内部自己实现</span></span><br><span class="line"><span class="comment">     * 是的浏览器能够加载CommonJs的模块.</span></span><br><span class="line"><span class="comment">     * 数组的第二项是依赖模块的路径和依赖id之间的对象关系对象</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    dependenceTree.forEach(<span class="function"><span class="params">dependence</span> =&gt;</span> &#123;</span><br><span class="line">        modules += <span class="string">`<span class="subst">$&#123;dependence.id&#125;</span>: [</span></span><br><span class="line"><span class="string">            function(require, module, exports) &#123;</span></span><br><span class="line"><span class="string">                <span class="subst">$&#123;dependence.code&#125;</span></span></span><br><span class="line"><span class="string">            &#125;,</span></span><br><span class="line"><span class="string">            <span class="subst">$&#123;<span class="built_in">JSON</span>.stringify(dependence.dependenceMapping)&#125;</span></span></span><br><span class="line"><span class="string">        ],`</span></span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> result = <span class="string">`</span></span><br><span class="line"><span class="string">    (function(modules) &#123;</span></span><br><span class="line"><span class="string">      function require(id) &#123;</span></span><br><span class="line"><span class="string">        const [fn, dependenceMapping] = modules[id];</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        function requireModule(name) &#123;</span></span><br><span class="line"><span class="string">          return require(dependenceMapping[name]);</span></span><br><span class="line"><span class="string">        &#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        const module = &#123; exports : &#123;&#125; &#125;;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        fn(requireModule, module, module.exports);</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        return module.exports;</span></span><br><span class="line"><span class="string">      &#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">      require(0);</span></span><br><span class="line"><span class="string">    &#125;)(&#123;<span class="subst">$&#123;modules&#125;</span>&#125;)</span></span><br><span class="line"><span class="string">  `</span>;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> graph = createDependenceTree(<span class="string">'./example/entry.js'</span>);</span><br><span class="line"><span class="keyword">const</span> result = bundle(graph);</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(result);</span><br><span class="line"></span><br><span class="line"><span class="comment">// (function (modules) &#123;</span></span><br><span class="line"><span class="comment">//     function require(id) &#123;</span></span><br><span class="line"><span class="comment">//         // 自己实现一个 commonjs 的 module 和 module.exports</span></span><br><span class="line"><span class="comment">//         const module = &#123;exports: &#123;&#125;&#125;;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//         const fn = modules[id][0];</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//         // 得到依赖mappong</span></span><br><span class="line"><span class="comment">//         const dependenceMapping = modules[id][1];</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//         // 定义一个函数，执行依赖文件并返回模块的 modules.exports</span></span><br><span class="line"><span class="comment">//         function requireModule(fileName) &#123;</span></span><br><span class="line"><span class="comment">//             return require(dependenceMapping[fileName]);</span></span><br><span class="line"><span class="comment">//         &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//         // 执行模块的内容，传入三个参数</span></span><br><span class="line"><span class="comment">//         fn(requireModule, module, module.exports);</span></span><br><span class="line"><span class="comment">//         return modules.exports;</span></span><br><span class="line"><span class="comment">//     &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//     // 执行入口模块</span></span><br><span class="line"><span class="comment">//     require(0);</span></span><br><span class="line"><span class="comment">// &#125;)(&#123;$&#123;modules&#125;&#125;)</span></span><br></pre></td></tr></table></figure>
+<p>项目地址： <a href="https://github.com/shangraochq/my-builder" target="_blank" rel="noopener">链接</a></p>
+<p>参考：<br><a href="https://www.youtube.com/watch?v=Gc9-7PBqOC8" target="_blank" rel="noopener">BUILD YOUR OWN WEBPACK by Ronen Amiel</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/23/mvvm/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -636,8 +788,9 @@
           
             <p>此处用来记录学习源码过程中，自己总结的效果较好的学习方法。</p>
 <ul>
-<li>阅读源码的时候，先看代码的整体流程和思路，画出流程图记录思路，可以先用笔画出流程图，之后整理成电子记录。</li>
+<li>阅读源码的时候，先看代码的整体流程和思路，画出流程图记录思路，可以先用笔画出流程图，之后整理成电子记录。</li>
 <li>整理出整体思路之后，可以根据自己感兴趣的部门阅读代码细节，重要技巧做笔记</li>
+<li>可以根据作者的提交记录来阅读，从第一次提交记录中往往比较容易看清楚框架的整体思路，而后根据每次提交记录追逐作者开发整个框架的思路</li>
 </ul>
 <p>## 不良习惯</p>
 <ul>
@@ -1557,178 +1710,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/09/DNS解析过程/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="弥生的狗子">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="弥生">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/09/09/DNS解析过程/" itemprop="url">DNS解析过程</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-09-09T17:50:52+08:00">
-                2018-09-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/网络/" itemprop="url" rel="index">
-                    <span itemprop="name">网络</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="什么是-DNS"><a href="#什么是-DNS" class="headerlink" title="什么是 DNS"></a>什么是 DNS</h3><p>DNS就像一个网络的通信录，将容易记忆的域名与不易记忆的服务器真实IP地址映射起来</p>
-<h3 id="DNS如何工作"><a href="#DNS如何工作" class="headerlink" title="DNS如何工作"></a>DNS如何工作</h3><p>一次没有任何缓存的DNS查询流程如下图所示：<br><img src="https://www.cloudflare.com/img/learning/dns/what-is-dns/dns-lookup-diagram.png" alt=""></p>
-<ol>
-<li>用户在浏览器等设备中输入example.com，查询请求首先被 DNS recursive resolver接收到</li>
-<li>DNS recursive resolver发送查询请求到 DNS root nameserver(根域DNS域名查询系统)</li>
-<li>DNS root nameserver 会将 Top Level Domain (TLD) DNS Server，及顶级域名查询系统的ip地址返回给DNS recursive resolver，例如.com或者.net</li>
-<li>DNS recursive resolver 接着会向.com TLD 发送查询请求.</li>
-<li>TLD 返回Authoritative nameserver（example.com）查询系统的ip地址</li>
-<li>最后DNS recursive resolver向Authoritative nameserver发送查询请求</li>
-<li>Authoritative nameserver返回example.com的ip地址</li>
-<li>DNS recursive resolver将example.com的ip地址返回给浏览器</li>
-</ol>
-<p>下面解释上述提到的4种域名查询服务器:</p>
-<ol>
-<li>DNS recursive resolver：可以理解为本地DNS服务器，是你电脑上网时IPv4或者IPv6设置中填写的那个DNS。这个有可能是手工指定的或者是DHCP自动分配的。它接受到浏览器的域名后，负责发送域名查询请求。</li>
-<li>DNS root nameserver: 指的是互联网根域</li>
-<li>TLD DNS Server：顶级域名查询系统，存着Authoritative nameserver的ip地址</li>
-<li>Authoritative nameserver：可以理解为二级域名查询系统，之所以叫权威域名系统，是因为它不需要去请求其他服务器，自己就能一个域名的最终的权威的IP地址。</li>
-</ol>
-<p>注意：当一个子域（foo.example.com）进行DNS查询时，一个额外的nameserver会在Authoritative nameserver之后，用于记录子域的CNAME record(后面有介绍什么是CNAME)。本地DNS服务器接受到CNAME之后，接着对CNAME进行DNS查询。过程如下图：</p>
-<p><img src="https://www.cloudflare.com/img/learning/dns/what-is-dns/dns-record-request-sequence-3.png" alt=""></p>
-<h3 id="DNS缓存"><a href="#DNS缓存" class="headerlink" title="DNS缓存"></a>DNS缓存</h3><p>DNS缓存的目的是缩短DNS的查询时间<br>有如下几种缓存机制：</p>
-<ol>
-<li>浏览器缓存：浏览器缓存域名也是有限制的，不仅浏览器缓存大小有限制，而且缓存的时间也有限制，通常情况下为几分钟到几小时不等。这个缓存时间太长和太短都不好，如果缓存时间太长，一旦域名被解析到的IP有变化，会导致被客户端缓存的域名无法解析到变化后的IP地址，以致该域名不能正常解析，这段时间内有可能会有一部分用户无法访问网站。如果时间设置太短，会导致用户每次访问网站都要重新解析一次域名。</li>
-<li>操作系统缓存：是缓存查找的第二步，也是最后一步本机的缓存，如果没有对应缓存，则浏览器会向DNS recursive resolver发起DNS查询请求</li>
-<li>DNS recursive resolver缓存：通常情况，80%的DNS到这里就结束了</li>
-</ol>
-<h3 id="DNS安全"><a href="#DNS安全" class="headerlink" title="DNS安全"></a>DNS安全</h3><p>// TODO</p>
-<h3 id="DNS优化"><a href="#DNS优化" class="headerlink" title="DNS优化"></a>DNS优化</h3><p>// TODO</p>
-<h3 id="什么是-DNS-CNAME"><a href="#什么是-DNS-CNAME" class="headerlink" title="什么是 DNS CNAME"></a>什么是 DNS CNAME</h3><p>一般情况下，一个域名通过DNS解析之后回返回一个ip地址。但是有一些域名或者子域通过DNS查询开始会返回的结果是另外一个域名，这个域名即它的CNAME record，而后会对CNAME进行DNS查询，返回最终的ip地址。<br>例如：假如blog.example.com 的 CNAME 是 example.com，则blog.example.com的DNS最终查询结果会返回example.com的ip地址。<br>注意：CNAME record一定是一个域名，不会是ip地址。<br>通常情况下，子域（blog.example.com）都会有一个指向根域（example.com）的CNAME，这么做的好处是当ip地址发生变动时，只需要变更根域的DNS映射关系。<br>使用了CNAME，有人会误认为子域和根域会返回相同的内容，其实这还是取决于服务端。CNAME只是让子域和根域指向同一个服务器，服务端还是会根据域名返回不同的内容。</p>
-<h3 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h3><p><a href="https://www.cloudflare.com/learning/dns/what-is-dns/" target="_blank" rel="noopener">What is DNS? | How DNS works</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1779,7 +1760,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-count">15</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
